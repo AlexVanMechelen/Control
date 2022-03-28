@@ -22,7 +22,7 @@ class Controller:
         if params.mode == 'OPEN_LOOP':
             u = params.w
         elif params.mode == 'CLASSICAL':
-            error = params.w - y
+            error = params.w - y[1]
             u = self.k * error
         elif params.mode == 'STATE_SPACE':
             pass
@@ -31,7 +31,7 @@ class Controller:
         else:
             u = 0.0
         #print(f"y = {y:5.3f}, e = {error:5.3f}, u = {u:5.3f}")
-        return u, [u, y]
+        return u, list(y)+[u]
 
 class Observer:
     "Implement your observer"

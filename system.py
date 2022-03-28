@@ -68,9 +68,10 @@ def visualizer(graph):
     plt.show()
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        raise ValueError('Please provide the kind of system [bob, maglev, bicopter, ship]')
-    system_type = sys.argv[1]
+    #  if len(sys.argv) < 2:
+    #      raise ValueError('Please provide the kind of system [bob, maglev, bicopter, ship]')
+    #  system_type = sys.argv[1]
+    system_type = 'pendulum'
     
     if len(sys.argv) > 2:
         if sys.argv[2] == 'no_noise':
@@ -97,7 +98,7 @@ if __name__ == '__main__':
         from src.ship import Ship, ShipGraph
         system = Ship(T=step_size)
         graph = ShipGraph(system)
-    elif system_type == '   ':
+    elif system_type == 'pendulum':
         from src.pendulum import Pendulum, PendulumGraph
         system = Pendulum(T=step_size, add_noise=ADD_NOISE)
         graph = PendulumGraph(system)
