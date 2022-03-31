@@ -1,3 +1,4 @@
+clear all, clc, close all
 %% define parameters and create tcp/ip object
 arduino = tcpclient('127.0.0.1', 6010, 'Timeout', 60);
 
@@ -23,7 +24,7 @@ w = 1.0;
 Y = get_response(arduino, w, n_samples);
 
 %%
-x = Y(1,:);, theta = Y(2,:);, u=Y(3,:);
+x = Y(1,:);, theta = Y(2,:);, u = Y(3,:);
 figure; plot(ts, x); title("x"); xlabel('t')
 figure; plot(ts, theta); title("theta"); xlabel('t')
 figure; plot(ts, u); title("u"); xlabel('t')
@@ -35,11 +36,11 @@ figure; plot(ts, u); title("u"); xlabel('t')
 % Sys heeft aantal params -> alle params indiv nodig?
 %  MOdelisatie opdat erna regeling -> TF opstellen en hoeveel onbekende
 %  params om deze te schatten
-p = polyfit(ts(1:43), y(1:43), 2);
+p = polyfit(ts(1:43), x(1:43), 2);
 x_fit = polyval(p, ts);
 
 figure; hold on;
-plot(ts, y, ts, x_fit);
+plot(ts, x, ts, x_fit);
 
 % Root locus van een onstabiel sys met 4 polen
 % Klassieke regelaar -> niet vanzelfsprekend
@@ -65,7 +66,7 @@ set_mode_params(arduino, mode, w, [-2.]);
 input('press enter')
 
 w = 0.1;
-reset_system(arduino)
+reset_system(arduino);
 Y = get_response(arduino, w, n_samples);
 x = Y(1,:);, theta = Y(2,:);, u=Y(3,:);
 figure; plot(ts, x); title("x"); xlabel('t')
