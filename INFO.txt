@@ -1,0 +1,8 @@
+% De waarde waarmee theta in ons systeem vergeleken word is 0, want
+% -pi/2 < theta < pi/2 en we wensen de positie omhoog
+
+% lsim -> init toestand meegeven en dan doet het discrete stappen
+
+% Geen stap uitvoeren, maar een lsim (F is de ingang w -> stelwaarde)
+% Niet vergeten te kijken naar welke kracht gegenereerd wordt bij
+% uitvoering van de lsim (realistisch?)
