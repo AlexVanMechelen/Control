@@ -77,3 +77,13 @@ pzmap(SdCL_1elus(1)) % die van x -> pool in 1 en 0 erbuiten zullen probl. vormen
 -----------------------------
 
 Q: Wat is het voordeel van een snelle pool (ref pool in 0)?
+-> integrerende pool zelfs -> statische fout van 0
+[Had ik niet ergens hierboven gezegd dat een pool in 1 een int. pool is?] -> To check
+-> Hoe verhelpen?
+  => Een pool op leggen
+Q: Willen we dit wel verhelpen? Want is niet vereist (zou nodig zijn voor als we de hoek op een bepaalde waarde zouden willen leggen)
+
+
+
+
+Nulpunt in 1 is derivatief -> een stapwaarde kan niet ondersteunt worden
