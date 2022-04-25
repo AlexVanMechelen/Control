@@ -8,7 +8,7 @@ write(arduino, mode);
 write(arduino, single(w));
 write(arduino, uint32(n_samples));
 
-n = round(read(arduino, 1, 'double')) % how many items per sample
+n = round(read(arduino, 1, 'double')); % how many items per sample
 
 Y = zeros(n, n_samples);
 for i = 1:n_samples
