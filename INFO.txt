@@ -1,0 +1,89 @@
+% De waarde waarmee theta in ons systeem vergeleken word is 0, want
+% -pi/2 < theta < pi/2 en we wensen de positie omhoog
+
+% lsim -> init toestand meegeven en dan doet het discrete stappen
+
+% Geen stap uitvoeren, maar een lsim (F is de ingang w -> stelwaarde)
+% Niet vergeten te kijken naar welke kracht gegenereerd wordt bij
+% uitvoering van de lsim (realistisch?)
+
+
+
+K -> mee winst van de regelaar
+Wnr fout E van 1 -> Alle z door 1 veranderen (Taubert)
+Eindwaarde zal later met een factor K worden vermenigvuldigd
+Voordeel om hoge globale gain te hebben van de regelaar -> statische fout zal kleiner zijn
+Nadeel -> 
+p44 -> statische gain K (wnr R en S de eindwaarde bereiken)
+IN principe voordelig door K groot te krijgen (ineindig) -> pool in 1 plaatsen om stat. fout = nul te krijgen
+
+Regelaar ontw. vr/d hoek -> nooit stap aanleggen -> stat. fout niet relevant
+Hoe groter gain, hoe groter kracht
+
+lsim -> init kracht groot en dan afnemen
+-> wnr groter dan wat sys aankan -> sys zal zich beetje anders gedragen, maar kan (mss) wel nog stabiel zijn
+
+Vr/d pos van de hoek -> belangrijk dat het sys stabiel is
+-> variaties rel klein
+
+TODO: sim hoe x zich gedraag
+
+
+Winst van de regelaar nog erin steken
+-> niet alleen hoek, ook pos
+
+
+Nul die erbuiten ligt
+-> Non Minimum Phase | Wnr stap eraan -> init. foute richting vertrekt
+
+
+Pool in 1 vormt probl omdat het de kracht integreert
+-> probl wanneer we de pos ook willen instellen
+
+Momenteel stabiliseert de pos al
+
+Evt de winst 
+
+
+Later -> 2de lus implementeren om ook de pos te regelen
+-> moeilijk, want maar 1 input (de kracht)
+-> problm bij lus errond -> influence
+
+-> trage regelaar vr/d pos en snelle voor hoek -> scheiding van de tijdsconstanten
+=> opteren om hoekregelaar snel te maken
+hoek: 1s
+pos kar: 10s~
+=> Check welke krachten ermee overenstemmen !!
+
+
+Integrerende pool in 1 zetten
+
+Zou kunnen dat door moddelleerfouten de polen niet werkelijk liggen waar we ze willen -> issue waar we moeilijk nu rek mee kunnen houden
+
+-----------------------------
+Onderaan Matlab Toevoegen
+-----------------------------
+SdCL_1elus = minreal(feedback(Rd*Sdtf,[0, 1])) % Minreal voor vereenvoudigde uitdrukking   || [0,1] voor enkel theta | later omgek. voor x
+% Voor de uitdrukking van x ligt er nu een pool in 1 en er ligt een 0 buiten
+
+impulse(SdCL_1elus)
+% Boven: relatie tss w en phi
+
+pzmap(SdCL_1elus(1)) % die van x -> pool in 1 en 0 erbuiten zullen probl. vormen bij ctrl pos karretje
+% 1 geeft geen probl voor impuls, maar wel wnr we de pos ergens willen
+% zetten -> cte kracht die geïntegreerd zal worden
+
+
+-----------------------------
+
+Q: Wat is het voordeel van een snelle pool (ref pool in 0)?
+-> integrerende pool zelfs -> statische fout van 0
+[Had ik niet ergens hierboven gezegd dat een pool in 1 een int. pool is?] -> To check
+-> Hoe verhelpen?
+  => Een pool op leggen
+Q: Willen we dit wel verhelpen? Want is niet vereist (zou nodig zijn voor als we de hoek op een bepaalde waarde zouden willen leggen)
+
+Regelaar met toestandsterugkoppeling -> er zal veel meer vrijheid zijn (echt gemaakt voor MIMO) dan bij klassieke ctrlr
+
+
+Nulpunt in 1 is derivatief -> een stapwaarde kan niet ondersteunt worden
