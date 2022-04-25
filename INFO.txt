@@ -80,10 +80,33 @@ Q: Wat is het voordeel van een snelle pool (ref pool in 0)?
 -> integrerende pool zelfs -> statische fout van 0
 [Had ik niet ergens hierboven gezegd dat een pool in 1 een int. pool is?] -> To check
 -> Hoe verhelpen?
-  => Een pool op leggen
+  => Een pool op leggen   -> Bedoelde nulpunt ??
 Q: Willen we dit wel verhelpen? Want is niet vereist (zou nodig zijn voor als we de hoek op een bepaalde waarde zouden willen leggen)
 
 Regelaar met toestandsterugkoppeling -> er zal veel meer vrijheid zijn (echt gemaakt voor MIMO) dan bij klassieke ctrlr
 
 
 Nulpunt in 1 is derivatief -> een stapwaarde kan niet ondersteunt worden
+
+------------------------------
+
+Uitwerken en omgekeerde z getransformeerde nemen
+(vorige waarde opslaan in python)
+
+R = k*(1-z^-1*z0)/(1-z^-1*p0)=U(z)/E(z)
+-> E(z)k(1-z0z^-1 = U(z)(1-p0z^-1)
+-> k(e(n)-z0e(n-1)
+
+
+Pool bv in 0.5 leggen
+u = self.k*(error - self.z0*self.e_prev) + self.p0 * self.u_prev
+self.e_prev = error
+self.u_prev = u
+
+Aanrader in 'set_params'
+if params.mode = 'CLASSICAL':
+    self.e_prev = 0
+    self.u_pref = 0
+    self.k = parameters[0]
+    self.z0 = parameters[1]
+    self.p0 = parameters[2]
