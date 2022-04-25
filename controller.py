@@ -3,14 +3,24 @@ from utilities import *
 class Controller:
     "Your Controller"
     def __init__(self):
-        self.k = 8.0
-
-        self.u_prev = 0.0
-        self.prev_error = 0.0
+        self.e_prev1    = 0.0
+        self.e_prev2    = 0.0
+        self.u_prev1    = 0.0
+        self.u_prev2    = 0.0
+        self.k  = 0.0
+        self.z  = []
+        self.p  = []
     
     def set_params(self, parameters):
         "params from matlab set_mode_params"
-        self.k    = parameters[0]
+        if params.mode == "CLASSICAL":
+            self.e_prev1    = 0.0
+            self.e_prev2    = 0.0
+            self.u_prev1    = 0.0
+            self.u_prev2    = 0.0
+            self.k  = parameters[0]
+            self.z  = parameters[1]
+            self.p  = parameters[2]
 
     def __call__(self, y):
         """Call controller with measurement y
@@ -22,15 +32,21 @@ class Controller:
         if params.mode == 'OPEN_LOOP':
             u = params.w
         elif params.mode == 'CLASSICAL':
-            error = params.w - y[1]
-            u = self.k * error
+            e = params.w - y[1] #Enkel het 2e argument omdat we momenteel slechts een controller voor de hoek implementeren
+            # Classical controller. Een van de polen (degene in 0) zal een deel van de vgl doen wegvallen waardoor self.u_prev2 overbodig wordt
+            u = self.k * (e - (self.z[0]+self.z[1])*self.e_prev1 + self.z[0]*self.z[1]*self.e_prev2) + (self.p[0]+self.p[1])*self.u_prev - self.p[0]*self.p[1]*self.u_prev2
+            # Updaten van de fouten
+            self.e_prev2 = self.e_prev1
+            self.e_prev1 = e
+            self.u_prev2 = self.u_prev1
+            self.u_prev1 = u
         elif params.mode == 'STATE_SPACE':
             pass
         elif params.mode == 'EXTENDED':
             pass
         else:
             u = 0.0
-        #print(f"y = {y:5.3f}, e = {error:5.3f}, u = {u:5.3f}")
+        #print(f"y = {y:5.3f}, e = {e:5.3f}, u = {u:5.3f}")
         return u, list(y)+[u]
 
 class Observer:
