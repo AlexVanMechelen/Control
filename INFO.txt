@@ -110,3 +110,9 @@ if params.mode = 'CLASSICAL':
     self.k = parameters[0]
     self.z0 = parameters[1]
     self.p0 = parameters[2]
+
+------------------------------
+
+Zero statische fout
+-> Niet implementeren voor de hoek, want we leggen er toch nooit een stap aan
+-> Wel evt implementeren voor de positie, want hier leggen we wel een stap aan

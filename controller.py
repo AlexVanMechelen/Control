@@ -39,7 +39,7 @@ class Controller:
         elif params.mode == 'CLASSICAL':
             e = params.w - y[1] #Enkel het 2e argument omdat we momenteel slechts een controller voor de hoek implementeren
             # Classical controller. Een van de polen (degene in 0) zal een deel van de vgl doen wegvallen waardoor self.u_prev2 overbodig wordt
-            u = self.k * (e - (self.z1+self.z2)*self.e_prev1 + self.z1*self.z2*self.e_prev2) + (self.p1+self.p2)*self.u_prev - self.p1*self.p2*self.u_prev2
+            u = self.k * (e - (self.z1+self.z2)*self.e_prev1 + self.z1*self.z2*self.e_prev2) + (self.p1+self.p2)*self.u_prev1 - self.p1*self.p2*self.u_prev2
             # Updaten van de fouten
             self.e_prev2 = self.e_prev1
             self.e_prev1 = e

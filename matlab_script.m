@@ -1,6 +1,6 @@
 clear all, clc, close all
 %% define parameters and create tcp/ip object
-arduino = tcpclient('127.0.0.1', 6010, 'Timeout', 60);
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
 
 %% define parameters and modes
 T_sample = 0.05;
@@ -17,7 +17,7 @@ EXTENDED    = 3;
 mode = OPEN_LOOP;
 w = -1.0;
 set_mode_params(arduino, mode, w, [])
-input('press enter')
+%input('press enter')
 reset_system(arduino)
 
 w = 1.0;
@@ -61,9 +61,9 @@ plot(ts, x, ts, x_fit);
 %%
 mode = CLASSICAL;
 w = 0.0;
-set_mode_params(arduino, mode, w, [-2.]);
+set_mode_params(arduino, mode, w, cat(1, 48.1, cat(1, zero(Rd), pole(Rd))));
 
-input('press enter')
+%input('press enter')
 
 w = 0.1;
 reset_system(arduino);
