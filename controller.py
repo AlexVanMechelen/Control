@@ -8,8 +8,11 @@ class Controller:
         self.u_prev1    = 0.0
         self.u_prev2    = 0.0
         self.k  = 0.0
-        self.z  = []
-        self.p  = []
+        self.z1  = 0.0
+        self.z2  = 0.0
+        self.p1  = 0.0
+        self.p2  = 0.0
+
     
     def set_params(self, parameters):
         "params from matlab set_mode_params"
@@ -19,8 +22,10 @@ class Controller:
             self.u_prev1    = 0.0
             self.u_prev2    = 0.0
             self.k  = parameters[0]
-            self.z  = parameters[1]
-            self.p  = parameters[2]
+            self.z1  = parameters[1]
+            self.z2  = parameters[2]
+            self.p1  = parameters[3]
+            self.p2  = parameters[4]
 
     def __call__(self, y):
         """Call controller with measurement y
@@ -34,7 +39,7 @@ class Controller:
         elif params.mode == 'CLASSICAL':
             e = params.w - y[1] #Enkel het 2e argument omdat we momenteel slechts een controller voor de hoek implementeren
             # Classical controller. Een van de polen (degene in 0) zal een deel van de vgl doen wegvallen waardoor self.u_prev2 overbodig wordt
-            u = self.k * (e - (self.z[0]+self.z[1])*self.e_prev1 + self.z[0]*self.z[1]*self.e_prev2) + (self.p[0]+self.p[1])*self.u_prev - self.p[0]*self.p[1]*self.u_prev2
+            u = self.k * (e - (self.z1+self.z2)*self.e_prev1 + self.z1*self.z2*self.e_prev2) + (self.p1+self.p2)*self.u_prev - self.p1*self.p2*self.u_prev2
             # Updaten van de fouten
             self.e_prev2 = self.e_prev1
             self.e_prev1 = e
