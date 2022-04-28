@@ -88,6 +88,12 @@ Regelaar met toestandsterugkoppeling -> er zal veel meer vrijheid zijn (echt gem
 
 Nulpunt in 1 is derivatief -> een stapwaarde kan niet ondersteunt worden
 
+Q: Waarom is het een pool en geen nulpunt voor reactietijd?
+
+
+Q: zero-static-error door pool in 1 -> wat als er 
+Wnr stat fout gelijk aan nul zou er een nulpnt in 1 moeten zijn tss w en e
+
 ------------------------------
 
 Uitwerken en omgekeerde z getransformeerde nemen
@@ -114,5 +120,7 @@ if params.mode = 'CLASSICAL':
 ------------------------------
 
 Zero statische fout
+=pool in 1 voor discreet | in 0 voor continu
+=conceptueel een lus erbij voegen met een pool in 1 (discr.)
 -> Niet implementeren voor de hoek, want we leggen er toch nooit een stap aan
 -> Wel evt implementeren voor de positie, want hier leggen we wel een stap aan
