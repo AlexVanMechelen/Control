@@ -45,6 +45,14 @@ class Controller:
             self.e_prev1 = e
             self.u_prev2 = self.u_prev1
             self.u_prev1 = u
+        elif params.mode == 'CLASSICAL_POS':
+            pass  # Remove this line
+            # u_prev1, u_prev2, e_prev1, e_prev2 allemaal verdubbelen (bv u_prev1 -> u_prev_angle_1 en u_prev_pos_1)
+            # Zelfde code als bij classical 2x hier kopiëren (1x exact en 1x aanpassen voor de hoek)
+
+            # Code hier & dan de comment hieronder uncommenten
+
+            # u = u_angle + u_pos
         elif params.mode == 'STATE_SPACE':
             pass
         elif params.mode == 'EXTENDED':

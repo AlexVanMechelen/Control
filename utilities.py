@@ -6,9 +6,10 @@ import numpy as np
 modes = {
     'OPEN_LOOP':    0,
     'CLASSICAL':    1,
-    'STATE_SPACE':  2,
-    'EXTENDED':     3,
-    'TEST':         4,
+    'CLASSICAL_POS':2,
+    'STATE_SPACE':  3,
+    'EXTENDED':     4,
+    'TEST':         5,
 }
 
 LOCALHOST = '127.0.0.1'
@@ -113,6 +114,8 @@ def matlab_comms(controller, params):
                         params.mode = 'OPEN_LOOP'
                     elif mode ==  modes['CLASSICAL']:
                         params.mode = 'CLASSICAL'
+                    elif mode ==  modes['CLASSICAL_POS']:
+                        params.mode = 'CLASSICAL_POS'
                     elif mode ==  modes['STATE_SPACE']:
                         params.mode = 'STATE_SPACE'
                     elif mode ==  modes['EXTENDED']:
