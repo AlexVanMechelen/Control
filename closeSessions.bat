@@ -1,0 +1,3 @@
+title Closing SYSTEM and CONTROLLER sessions...
+for /f "tokens=2" %%A in ('tasklist /v /fi "imagename eq cmd.exe" ^|findstr /l /c:"SYSTEM" /c:"CONTROLLER"') do taskkill /pid %%A
+exit
