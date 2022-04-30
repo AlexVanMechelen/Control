@@ -1,31 +1,76 @@
+from termios import B200
 from utilities import *
 
 class Controller:
     "Your Controller"
     def __init__(self):
-        self.e_prev1    = 0.0
-        self.e_prev2    = 0.0
-        self.u_prev1    = 0.0
-        self.u_prev2    = 0.0
-        self.k  = 0.0
-        self.z1  = 0.0
-        self.z2  = 0.0
-        self.p1  = 0.0
-        self.p2  = 0.0
+        self.e1_prev1    = 0.0
+        self.e1_prev2    = 0.0
+        self.e1_prev3    = 0.0
+        self.e1_prev4    = 0.0
+        self.u1_prev1    = 0.0
+        self.u1_prev2    = 0.0
+        self.u1_prev3    = 0.0
+        self.u1_prev4    = 0.0
+        self.k1 = 0.0
+        self.z11    = 0.0
+        self.z12    = 0.0
+        self.z13    = 0.0
+        self.p11    = 0.0
+        self.p12    = 0.0
+        self.p13    = 0.0
+        self.p14    = 0.0
+
+        self.e2_prev1    = 0.0
+        self.e2_prev2    = 0.0
+        self.u2_prev1    = 0.0
+        self.u2_prev2    = 0.0
+        self.k2 = 0.0
+        self.z21    = 0.0
+        self.z22    = 0.0
+        self.p21    = 0.0
+        self.p22    = 0.0
 
     
     def set_params(self, parameters):
         "params from matlab set_mode_params"
-        if params.mode == "CLASSICAL":
-            self.e_prev1    = 0.0
-            self.e_prev2    = 0.0
-            self.u_prev1    = 0.0
-            self.u_prev2    = 0.0
-            self.k  = parameters[0]
-            self.z1  = parameters[1]
-            self.z2  = parameters[2]
-            self.p1  = parameters[3]
-            self.p2  = parameters[4]
+        if params.mode == "CLASSICAL_ANG":
+            self.e2_prev1    = 0.0
+            self.e2_prev2    = 0.0
+            self.u2_prev1    = 0.0
+            self.u2_prev2    = 0.0
+            self.k2  = parameters[0]
+            self.z21  = parameters[1]
+            self.z22  = parameters[2]
+            self.p21  = parameters[3]
+            self.p22  = parameters[4]
+        if params.mode == "CLASSICAL_COMB":
+            self.e1_prev1    = 0.0
+            self.e1_prev2    = 0.0
+            self.e1_prev3    = 0.0
+            self.e1_prev4    = 0.0
+            self.u1_prev1    = 0.0
+            self.u1_prev2    = 0.0
+            self.u1_prev3    = 0.0
+            self.u1_prev4    = 0.0
+            self.k1  = parameters[0]
+            self.z11  = parameters[1]
+            self.z12  = parameters[2]
+            self.z13  = parameters[3]
+            self.p11  = parameters[4]
+            self.p12  = parameters[5]
+            self.p13  = parameters[6]
+            self.p14  = parameters[7]
+
+            self.e2_prev1    = 0.0
+            self.e2_prev2    = 0.0
+            self.u2_prev1    = 0.0
+            self.u2_prev2    = 0.0
+            self.k2  = parameters[8]
+            self.z21  = parameters[9]
+            self.z22  = parameters[10]
+            self.p21  = parameters[11]
+            self.p22  = parameters[12]
 
     def __call__(self, y):
         """Call controller with measurement y
@@ -36,23 +81,48 @@ class Controller:
         """
         if params.mode == 'OPEN_LOOP':
             u = params.w
-        elif params.mode == 'CLASSICAL':
+        elif params.mode == 'CLASSICAL_ANG':
+            # Enkel implementatie hoek
             e = params.w - y[1] #Enkel het 2e argument omdat we momenteel slechts een controller voor de hoek implementeren
             # Classical controller. Een van de polen (degene in 0) zal een deel van de vgl doen wegvallen waardoor self.u_prev2 overbodig wordt
-            u = self.k * (e - (self.z1+self.z2)*self.e_prev1 + self.z1*self.z2*self.e_prev2) + (self.p1+self.p2)*self.u_prev1 - self.p1*self.p2*self.u_prev2
+            u = self.k2 * (e - (self.z21+self.z22)*self.e2_prev1 + self.z21*self.z22*self.e2_prev2) + (self.p21+self.p22)*self.u2_prev1 - self.p21*self.p22*self.u2_prev2
             # Updaten van de fouten
-            self.e_prev2 = self.e_prev1
-            self.e_prev1 = e
-            self.u_prev2 = self.u_prev1
-            self.u_prev1 = u
-        elif params.mode == 'CLASSICAL_POS':
-            pass  # Remove this line
-            # u_prev1, u_prev2, e_prev1, e_prev2 allemaal verdubbelen (bv u_prev1 -> u_prev_angle_1 en u_prev_pos_1)
-            # Zelfde code als bij classical 2x hier kopiëren (1x exact en 1x aanpassen voor de hoek)
+            self.e2_prev2 = self.e2_prev1
+            self.e2_prev1 = e
+            self.u2_prev2 = self.u2_prev1
+            self.u2_prev1 = u
+        elif params.mode == 'CLASSICAL_COMB':
+            e1 = params.w - y[0]
+            e2 = params.w - y[1]
 
-            # Code hier & dan de comment hieronder uncommenten
+            A1 = (self.p11+self.p12+self.p13+self.p14)
+            A2 = (self.p11*self.p12+self.p12*self.p13+self.p13*self.p14+self.p11*self.p13+self.p12*self.p14+self.p11*self.p14)
+            A3 = (self.p11*self.p12*self.p13+self.p11*self.p13*self.p14+self.p12*self.p13*self.p14+self.p11*self.p12*self.p14)
+            A4 = self.p11*self.p12*self.p13*self.p14
 
-            # u = u_angle + u_pos
+            B1 = 1
+            B2 = (self.z11+self.z12+self.z13)
+            B3 = (self.z11*self.z12+self.z11*self.z13+self.z12*self.z13)
+            B4 = self.z11*self.z12*self.z13
+
+            u1 = -A4*self.u1_prev4+A3*self.u1_prev3-A2*self.u1_prev2+A1*self.u1_prev1+self.k1*(B1*self.e1_prev1+B2*self.e1_prev2+B3*self.e1_prev3+B4*self.e1_prev4)
+            u2 = self.k2 * (e2 - (self.z21+self.z22)*self.e2_prev1 + self.z21*self.z22*self.e2_prev2) + (self.p21+self.p22)*self.u2_prev1 - self.p21*self.p22*self.u2_prev2
+    
+            u = u1 + u2
+
+            self.e1_prev4 = self.e1_prev3
+            self.e1_prev3 = self.e1_prev2
+            self.e1_prev2 = self.e1_prev1
+            self.e1_prev1 = e1
+            self.u1_prev4 = self.u1_prev3
+            self.u1_prev3 = self.u1_prev2
+            self.u1_prev2 = self.u1_prev1
+            self.u1_prev1 = u1
+
+            self.e2_prev2 = self.e2_prev1
+            self.e2_prev1 = e2
+            self.u2_prev2 = self.u2_prev1
+            self.u2_prev1 = u2
         elif params.mode == 'STATE_SPACE':
             pass
         elif params.mode == 'EXTENDED':

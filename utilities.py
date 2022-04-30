@@ -5,8 +5,8 @@ import numpy as np
 
 modes = {
     'OPEN_LOOP':    0,
-    'CLASSICAL':    1,
-    'CLASSICAL_POS':2,
+    'CLASSICAL_ANG':    1,
+    'CLASSICAL_COMB':2,
     'STATE_SPACE':  3,
     'EXTENDED':     4,
     'TEST':         5,
@@ -112,10 +112,10 @@ def matlab_comms(controller, params):
                     n_params = read_int(connection)
                     if mode ==  modes['OPEN_LOOP']:
                         params.mode = 'OPEN_LOOP'
-                    elif mode ==  modes['CLASSICAL']:
-                        params.mode = 'CLASSICAL'
-                    elif mode ==  modes['CLASSICAL_POS']:
-                        params.mode = 'CLASSICAL_POS'
+                    elif mode ==  modes['CLASSICAL_ANG']:
+                        params.mode = 'CLASSICAL_ANG'
+                    elif mode ==  modes['CLASSICAL_COMB']:
+                        params.mode = 'CLASSICAL_COMB'
                     elif mode ==  modes['STATE_SPACE']:
                         params.mode = 'STATE_SPACE'
                     elif mode ==  modes['EXTENDED']:
