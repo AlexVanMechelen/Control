@@ -1,4 +1,3 @@
-from termios import B200
 from utilities import *
 
 class Controller:
