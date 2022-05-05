@@ -54,12 +54,14 @@ class Pendulum(System):
         elif x > length-2*self.params['cart_length']/2:
             x = length-2*self.params['cart_length']/2
             v = -DAMP_COEFF*v
-        if phi > np.pi/2.1:
-            phi = np.pi/2.1
-            omega = -DAMP_COEFF*omega
-        elif phi < -np.pi/2.1:
-            phi = -np.pi/2.1
-            omega = -DAMP_COEFF*omega
+        if abs(phi) > np.pi:
+            phi = phi-np.sign(phi)*2*np.pi
+        # if phi > np.pi/2.1:
+        #     phi = np.pi/2.1
+        #     omega = -DAMP_COEFF*omega
+        # elif phi < -np.pi/2.1:
+        #     phi = -np.pi/2.1
+        #     omega = -DAMP_COEFF*omega
         self.state[0] = x
         self.state[1] = v
         self.state[2] = phi
@@ -78,9 +80,12 @@ class Pendulum(System):
         N = I*(M+m) + M*m*L**2
         x_dot = np.zeros((4, ))
         x_dot[0] = x[1]
-        x_dot[1] = (-(I+m*L**2)*b*x[1] + m**2*g*L**2 * x[2] + (I+m*L**2)*u)/N
+        #x_dot[1] = (-(I+m*L**2)*b*x[1] + m**2*g*L**2 * x[2] + (I+m*L**2)*u)/N #Lineair systeem => Geen realistisch model
+        x_dot[1] = (u+m*L*x[3]*np.sin(np.pi+x[2])-b*x[1]+m**2*L**2*g*np.sin(np.pi+x[2]))/(M+m-m**2*L**2*np.cos(np.pi+x[2])/(I+m*L**2))
         x_dot[2] = x[3]
-        x_dot[3] = (-m*L*b * x[1] + m*g*L*(M+m) * x[2] + m*L*u)/N
+        #x_dot[3] = (-m*L*b * x[1] + m*g*L*(M+m) * x[2] + m*L*u)/N #Lineair systeem => Geen realistisch model
+        x_dot[3] = (u-b*x[1]+m*L*x[3]**2*np.sin(np.pi+x[2])+m*g*L*np.sin(np.pi+x[2])*(m+M)/(m*L*np.cos(np.pi+x[2])))/((m+M)*(I+m*L**2)/(-m*L*np.cos(np.pi+x[2]))+m*L*np.cos(np.pi+x[2]))
+
         return x_dot
     
     def get_state(self):
