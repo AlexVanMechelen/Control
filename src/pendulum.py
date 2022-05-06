@@ -20,7 +20,7 @@ class Pendulum(System):
             'm':            0.2,            # mass of pendulum (kg)
             'friction':     0.1,            # friction coefficient for cart
             'max_F':        10.,            # max allowed force (N)
-            'rail_length':  3.,             # length of the rail
+            'rail_length':  5.,             # length of the rail
             'cart_length':  0.2,            # half length of cart
         }
         self.add_noise = add_noise
@@ -104,7 +104,7 @@ class PendulumGraph:
         self.ax.axis('scaled')
 
         length = self.system.params['rail_length']
-        self.ax.axis([-1.1*length, 1.1*length, -0.1,  2.5*self.L])
+        self.ax.axis([-1.1*length, 1.1*length, -0.1,  1])
         self.cart_l = self.system.params['cart_length']
 
         self.update()

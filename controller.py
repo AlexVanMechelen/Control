@@ -85,6 +85,8 @@ class Controller:
             e = params.w - y[1] #Enkel het 2e argument omdat we momenteel slechts een controller voor de hoek implementeren
             # Classical controller. Een van de polen (degene in 0) zal een deel van de vgl doen wegvallen waardoor self.u_prev2 overbodig wordt
             u = self.k2 * (e - (self.z21+self.z22)*self.e2_prev1 + self.z21*self.z22*self.e2_prev2) + (self.p21+self.p22)*self.u2_prev1 - self.p21*self.p22*self.u2_prev2
+            if abs(u) > 10:
+                u = np.sign(u)*10
             # Updaten van de fouten
             self.e2_prev2 = self.e2_prev1
             self.e2_prev1 = e
@@ -109,6 +111,12 @@ class Controller:
     
             u = u1 + u2
 
+            if abs(u) > 10:
+                u = np.sign(u)*10
+            if abs(u1) > 10:
+                u1 = np.sign(u)*10*u1/(u1+u2)
+            if abs(u2) > 10:
+                u2 = np.sign(u)*10*u2/(u1+u2)
             self.e1_prev4 = self.e1_prev3
             self.e1_prev3 = self.e1_prev2
             self.e1_prev2 = self.e1_prev1
