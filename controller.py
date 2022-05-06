@@ -151,7 +151,10 @@ class Controller:
         else:
             u = 0.0
         #print(f"y = {y:5.3f}, e = {e:5.3f}, u = {u:5.3f}")
-        return u, list(y)+[u]
+        self.x_hat = self.observer(u, y, self.x_hat)
+        print(self.x_hat)
+        print(list(y)+[u]+list(self.x_hat))
+        return u, list(y)+[u]+list(self.x_hat)
 
 class Observer:
     "Implement your observer"
@@ -167,7 +170,7 @@ class Observer:
 
     def __call__(self, u, y, x_hat):
         "Call observer with this method; Inputs: command u and measurement y"
-        C = np.eye((2, 4)) # What is C ??
+        C = np.ones((2, 4)) # What is C ??
         x_hat = (self.A - self.L.dot(C)).dot(x_hat) + self.B.dot(u) + self.L.dot(y)
 
 #### ------ don't change anything below ----------- ####
