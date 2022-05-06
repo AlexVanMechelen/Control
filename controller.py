@@ -1,3 +1,5 @@
+import numpy as np
+
 from utilities import *
 
 class Controller:
@@ -30,6 +32,9 @@ class Controller:
         self.p21    = 0.0
         self.p22    = 0.0
 
+        self.x_hat = np.array([(0.0,), (0.0,) ])
+        self.observer = Observer()
+
     
     def set_params(self, parameters):
         "params from matlab set_mode_params"
@@ -43,7 +48,7 @@ class Controller:
             self.z22  = parameters[2]
             self.p21  = parameters[3]
             self.p22  = parameters[4]
-        if params.mode == "CLASSICAL_COMB":
+        elif params.mode == "CLASSICAL_COMB":
             self.e1_prev1    = 0.0
             self.e1_prev2    = 0.0
             self.e1_prev3    = 0.0
@@ -70,6 +75,15 @@ class Controller:
             self.z22  = parameters[10]
             self.p21  = parameters[11]
             self.p22  = parameters[12]
+
+        elif params.mode == "STATE_SPACE":
+            L = (parameters[0:7]).reshape(4, 2)
+            A = (parameters[8:23]).reshape(4, 4)
+            B = (parameters[24:31]).reshape(2, 4)
+
+            # Set observer params
+            self.observer.set_arrays(L, A, B)
+
 
     def __call__(self, y):
         """Call controller with measurement y
@@ -142,10 +156,19 @@ class Controller:
 class Observer:
     "Implement your observer"
     def __init__(self):
-        pass
-    def __call__(self, u, y):
+        self.L = np.zeros((4, 2))
+        self.A = np.zeros((4, 4))
+        self.B = np.zeros((2, 4))
+
+    def set_arrays(self, L, A, B):
+        self.L = np.array(L)
+        self.A = np.array(A)
+        self.B = np.array(B)
+
+    def __call__(self, u, y, x_hat):
         "Call observer with this method; Inputs: command u and measurement y"
-        pass
+        C = np.eye((2, 4)) # What is C ??
+        x_hat = (self.A - self.L.dot(C)).dot(x_hat) + self.B.dot(u) + self.L.dot(y)
 
 #### ------ don't change anything below ----------- ####
 
