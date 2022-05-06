@@ -32,7 +32,7 @@ class Controller:
         self.p21    = 0.0
         self.p22    = 0.0
 
-        self.x_hat = np.zeros((4, 2))
+        self.x_hat = np.zeros((4, 1))
         self.observer = Observer()
 
     
@@ -79,10 +79,11 @@ class Controller:
         elif params.mode == "STATE_SPACE":
             L = (parameters[0:7]).reshape(4, 2)
             A = (parameters[8:23]).reshape(4, 4)
-            B = (parameters[24:31]).reshape(2, 4)
+            B = (parameters[24:27]).reshape(1, 4)
+            C = (parameters[28:35]).reshape(2, 4)
 
             # Set observer params
-            self.observer.set_arrays(L, A, B)
+            self.observer.set_arrays(L, A, B, C)
 
 
     def __call__(self, y):
@@ -152,8 +153,6 @@ class Controller:
             u = 0.0
         #print(f"y = {y:5.3f}, e = {e:5.3f}, u = {u:5.3f}")
         self.x_hat = self.observer(u, y, self.x_hat)
-        print(self.x_hat)
-        print(list(y)+[u]+list(self.x_hat))
         return u, list(y)+[u]+list(self.x_hat)
 
 class Observer:
@@ -161,24 +160,20 @@ class Observer:
     def __init__(self):
         self.L = np.zeros((4, 2))
         self.A = np.zeros((4, 4))
-        self.B = np.zeros((2, 4))
+        self.B = np.zeros((1, 4))
+        self.C = np.zeros((2, 4))
 
-    def set_arrays(self, L, A, B):
+    def set_arrays(self, L, A, B, C):
         self.L = np.array(L)
         self.A = np.array(A)
         self.B = np.array(B)
+        self.C = np.array(B)
 
     def __call__(self, u, y, x_hat):
         "Call observer with this method; Inputs: command u and measurement y"
-        C = np.ones((2, 4)) # What is C ??
-        print(self.A - self.L.dot(C))
+        x_hat = (self.A - self.L.dot(self.C)).dot(x_hat) + np.transpose(self.B.dot(u)) + [[x] for x in (self.L.dot(y))]
+        return x_hat
 
-        print((self.A - self.L.dot(C)).dot(x_hat))
-
-        print(self.B.dot(u))
-
-        print(self.L.dot(y))
-        x_hat = (self.A - self.L.dot(C)).dot(x_hat) + self.B.dot(u) + self.L.dot(y)
 
 #### ------ don't change anything below ----------- ####
 
