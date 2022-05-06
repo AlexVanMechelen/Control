@@ -124,3 +124,41 @@ Zero statische fout
 =conceptueel een lus erbij voegen met een pool in 1 (discr.)
 -> Niet implementeren voor de hoek, want we leggen er toch nooit een stap aan
 -> Wel evt implementeren voor de positie, want hier leggen we wel een stap aan
+
+---------------------------------------
+
+Observator Implementeren
+
+x_hat(n+1) = A*x_hat(n) + B*u(n) + L(y - C*x_hat)      *
+
+In fie van hoeveel ruis er is polen plaatsen om een observator te maken
+In matlab (A-LC)
+
+Klassieke regelaar gebruiken om u te berekenen
+
+In class Controller:
+self.Observer = Observer    % In init
+x_hat = self.Observer(u,y)
+-> Zal toelaten om in CLASSICAL x_hat te berekenen met ^ ^
+return u, [ ..... x_hat ....]   % Om te ctrleren in Matlab
+
+class Observer
+ def __init__(self-
+self.A = ...
+
+def __call__(self, u, y)
+x_hat=...
+return x_hat
+
+* is 1 grote matrixvermenigvuldiging
+-> Berekenen met numpy
+A@x_hat   (matrix-vermenigvuldiging)
+
+* Niet direct implementeren in de ctrler
+-> Proberen eerst de controller in een andere python file te doen
+-> Dan kopiëren naar ctrl
+
+
+-----
+Positie gemeten, maar snelheid
+
