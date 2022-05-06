@@ -32,7 +32,7 @@ class Controller:
         self.p21    = 0.0
         self.p22    = 0.0
 
-        self.x_hat = np.array([(0.0,), (0.0,) ])
+        self.x_hat = np.zeros((4, 2))
         self.observer = Observer()
 
     
@@ -171,6 +171,13 @@ class Observer:
     def __call__(self, u, y, x_hat):
         "Call observer with this method; Inputs: command u and measurement y"
         C = np.ones((2, 4)) # What is C ??
+        print(self.A - self.L.dot(C))
+
+        print((self.A - self.L.dot(C)).dot(x_hat))
+
+        print(self.B.dot(u))
+
+        print(self.L.dot(y))
         x_hat = (self.A - self.L.dot(C)).dot(x_hat) + self.B.dot(u) + self.L.dot(y)
 
 #### ------ don't change anything below ----------- ####
