@@ -7,9 +7,9 @@ modes = {
     'OPEN_LOOP':    0,
     'CLASSICAL_ANG':    1,
     'CLASSICAL_COMB':2,
-    'STATE_SPACE':  3,
-    'EXTENDED':     4,
-    'TEST':         5,
+    'OBSERVER_TEST': 3,
+    'STATE_SPACE':  4,
+    'EXTENDED':     5,
 }
 
 LOCALHOST = '127.0.0.1'

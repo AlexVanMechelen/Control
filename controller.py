@@ -50,6 +50,7 @@ class Controller:
             self.z22  = parameters[2]
             self.p21  = parameters[3]
             self.p22  = parameters[4]
+
         elif params.mode == "CLASSICAL_COMB":
             self.e1_prev1    = 0.0
             self.e1_prev2    = 0.0
@@ -78,7 +79,7 @@ class Controller:
             self.p21  = parameters[11]
             self.p22  = parameters[12]
 
-        elif params.mode == "STATE_SPACE":
+        elif params.mode == "OBSERVER_TEST":
             self.e1_prev1    = 0.0
             self.e1_prev2    = 0.0
             self.e1_prev3    = 0.0
@@ -106,13 +107,18 @@ class Controller:
             self.p21  = parameters[11]
             self.p22  = parameters[12]
 
-            L = np.reshape(parameters[13:21],(4, 2), order='F')
-            A = np.reshape(parameters[21:37],(4, 4), order='F')
-            B = np.reshape(parameters[37:41],(1, 4), order='F')
-            C = np.reshape(parameters[41:49],(2, 4), order='F')
+            L = np.reshape(parameters[13:21], (4, 2), order='F')
+            A = np.reshape(parameters[21:37], (4, 4), order='F')
+            B = np.reshape(parameters[37:41], (1, 4), order='F')
+            C = np.reshape(parameters[41:49], (2, 4), order='F')
 
             # Set observer params
             self.observer.set_arrays(L, A, B, C)
+
+        elif params.mode == "STATE_SPACE":
+            pass
+        elif params.mode == 'EXTENDED':
+            pass
 
 
     def __call__(self, y):
@@ -177,7 +183,7 @@ class Controller:
             self.u2_prev2 = self.u2_prev1
             self.u2_prev1 = u2
             out = list(y)+[u]
-            
+
         elif params.mode == 'OBSERVER_TEST':
             e1 = params.w - y[0]
             e2 = - y[1]
@@ -217,7 +223,7 @@ class Controller:
             self.u2_prev2 = self.u2_prev1
             self.u2_prev1 = u2
             self.x_hat = self.observer(u, y, self.x_hat)
-            out = list(y)+[u]+list(self.x_hat)
+            out = list(y)+[u]+list(np.concatenate(self.x_hat))
 
         elif params.mode == 'STATE_SPACE':
             pass
