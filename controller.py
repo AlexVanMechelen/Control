@@ -177,7 +177,8 @@ class Controller:
             self.u2_prev2 = self.u2_prev1
             self.u2_prev1 = u2
             out = list(y)+[u]
-        elif params.mode == 'STATE_SPACE':
+            
+        elif params.mode == 'OBSERVER_TEST':
             e1 = params.w - y[0]
             e2 = - y[1]
 
@@ -217,6 +218,9 @@ class Controller:
             self.u2_prev1 = u2
             self.x_hat = self.observer(u, y, self.x_hat)
             out = list(y)+[u]+list(self.x_hat)
+
+        elif params.mode == 'STATE_SPACE':
+            pass
         elif params.mode == 'EXTENDED':
             pass
         else:

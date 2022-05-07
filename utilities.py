@@ -116,6 +116,8 @@ def matlab_comms(controller, params):
                         params.mode = 'CLASSICAL_ANG'
                     elif mode ==  modes['CLASSICAL_COMB']:
                         params.mode = 'CLASSICAL_COMB'
+                    elif mode == modes['OBSERVER_TEST']:
+                        params.mode = 'OBSERVER_TEST'
                     elif mode ==  modes['STATE_SPACE']:
                         params.mode = 'STATE_SPACE'
                     elif mode ==  modes['EXTENDED']:
