@@ -37,6 +37,8 @@ def controller(system):
         # do something with msg
         if msg == 'measure':
             conn.send(system.get_measurement())
+        elif msg == 'measure_exact':
+            conn.send(system.get_measurement_exact())
         elif msg == 'command':
             u = conn.recv()
             try:

@@ -31,6 +31,11 @@ def get_measurement(conn):
     y = conn.recv()
     return y
 
+def get_measurement_exact(conn):
+    conn.send('measure_exact')
+    y = conn.recv()
+    return y
+
 def set_u(conn, u):
     conn.send('command')
     conn.send(u)
@@ -48,9 +53,11 @@ def system_comms(controller, params):
             u, results = controller(y)
             set_u(conn, u)
 
+            exact_x = get_measurement_exact(conn)
+
             # handle ongoing measurement
             if params.n_samples > 0:
-                params.buffer.append(results)
+                params.buffer.append(list(results) + list(exact_x))
                 params.n_samples -= 1
                 # when all needed samples are collected, send Y and U to matlab 
                 if len(params.buffer) > 0 and params.n_samples == 0: 

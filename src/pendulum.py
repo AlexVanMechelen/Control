@@ -34,6 +34,9 @@ class Pendulum(System):
             measurement[0] += np.random.normal(scale=0.01)
             measurement[1] += np.random.normal(scale=0.005)
         return measurement
+
+    def get_measurement_exact(self):
+        return self.state
     
     def _constrain_input(self, u):
         max_F = self.params['max_F']
