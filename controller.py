@@ -37,7 +37,7 @@ class Controller:
         self.x_hat = np.zeros((4, 1))
         self.observer = Observer()
 
-        self.angle_factor = 20 / 10  # Importance of angle control when force above maxF (1 is equally important | f < 1 is less important | f > 1 is more important)
+        self.angle_factor = 11 / 10  # Importance of angle control when force above maxF (1 is equally important | f < 1 is less important | f > 1 is more important)
 
     
     def set_params(self, parameters):
@@ -254,6 +254,7 @@ class Observer:
 
     def __call__(self, u, y, x_hat):
         "Call observer with this method; Inputs: command u and measurement y"
+        #print(x_hat)
         x_hat = np.matmul(self.A - np.matmul(self.L,self.C),x_hat) + np.transpose(self.B*u) + [[x] for x in np.matmul(self.L,y)]
         return x_hat
 
