@@ -69,7 +69,7 @@ class Pendulum(System):
         self.state[1] = v
         self.state[2] = phi
         self.state[3] = omega
-    
+        
     def deriv(self, t, x, u):
         """Computes first derivatives"""
         L = self.params['L']
@@ -140,7 +140,7 @@ class PendulumGraph:
         x, v, phi, omega, F = self.update(i)
         self.pendulum.set_data([self.pendulum_start[0], self.pendulum_end[0]],
                                [self.pendulum_start[1], self.pendulum_end[1]])
-        self.cart.set_x(x-self.cart_l)                         
+        self.cart.set_x(x-self.cart_l)
         #self.text.set_text(r'x = {:+.2f}, v = {:+.2f}, $\phi$ = {:.2f}, F = {:+.2f}'.format(x, v, phi, F))
         self.text.set_text(f'x = {x:+.2f}, v = {v:+.2f}, $\phi$ = {phi:.2f}, $\omega$ = {omega:.2f}, F = {F:+.2f}')
 

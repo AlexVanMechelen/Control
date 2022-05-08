@@ -37,6 +37,8 @@ class Controller:
         self.x_hat = np.zeros((4, 1))
         self.observer = Observer()
 
+        self.angle_factor = 9 / 10  # Importance of angle control when force above maxF (between 0 and 1)
+
     
     def set_params(self, parameters):
         "params from matlab set_mode_params"
@@ -131,6 +133,7 @@ class Controller:
         if params.mode == 'OPEN_LOOP':
             u = params.w
             out = list(y)+[u]
+
         elif params.mode == 'CLASSICAL_ANG':
             # Enkel implementatie hoek
             e = params.w - y[1] #Enkel het 2e argument omdat we momenteel slechts een controller voor de hoek implementeren
@@ -144,6 +147,7 @@ class Controller:
             self.u2_prev2 = self.u2_prev1
             self.u2_prev1 = u
             out = list(y)+[u]
+
         elif params.mode == 'CLASSICAL_COMB':
             e1 = params.w - y[0]
             e2 = - y[1]
@@ -164,11 +168,10 @@ class Controller:
             u = u1 + u2
 
             if abs(u) > 10:
-                u = np.sign(u)*10
-            if abs(u1) > 10:
-                u1 = np.sign(u)*10*u1/(u1+u2)
-            if abs(u2) > 10:
-                u2 = np.sign(u)*10*u2/(u1+u2)
+                u1 = np.sign(u) * 10 * u1 / (u1 + u2) * self.angle_factor
+                u2 = np.sign(u) * 10 * u2 / (u1 + u2) * (1 - self.angle_factor)
+                u = u1 + u2
+
             self.e1_prev4 = self.e1_prev3
             self.e1_prev3 = self.e1_prev2
             self.e1_prev2 = self.e1_prev1
@@ -204,11 +207,10 @@ class Controller:
             u = u1 + u2
 
             if abs(u) > 10:
-                u = np.sign(u)*10
-            if abs(u1) > 10:
-                u1 = np.sign(u)*10*u1/(u1+u2)
-            if abs(u2) > 10:
-                u2 = np.sign(u)*10*u2/(u1+u2)
+                u1 = np.sign(u) * 10 * u1 / (u1 + u2) * self.angle_factor
+                u2 = np.sign(u) * 10 * u2 / (u1 + u2) * (1-self.angle_factor)
+                u = u1 + u2
+
             self.e1_prev4 = self.e1_prev3
             self.e1_prev3 = self.e1_prev2
             self.e1_prev2 = self.e1_prev1
