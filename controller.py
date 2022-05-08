@@ -37,7 +37,7 @@ class Controller:
         self.x_hat = np.zeros((4, 1))
         self.observer = Observer()
 
-        self.angle_factor = 9 / 10  # Importance of angle control when force above maxF (between 0 and 1)
+        self.angle_factor = 20 / 10  # Importance of angle control when force above maxF (1 is equally important | f < 1 is less important | f > 1 is more important)
 
     
     def set_params(self, parameters):
@@ -170,8 +170,8 @@ class Controller:
             u = u1 + u2
 
             if abs(u) > 10:
-                u1 = np.sign(u) * 10 * u1 / (u1 * self.angle_factor + u2) * self.angle_factor
-                u2 = np.sign(u) * 10 * u2 / (u1 * self.angle_factor + u2)
+                u1 = np.sign(u) * 10 * u1 / (u1 + u2 * self.angle_factor) 
+                u2 = np.sign(u) * 10 * u2 / (u1 + u2 * self.angle_factor) * self.angle_factor
                 u = u1 + u2
 
             self.e1_prev4 = self.e1_prev3
