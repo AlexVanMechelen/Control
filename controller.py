@@ -170,8 +170,8 @@ class Controller:
             u = u1 + u2
 
             if abs(u) > 10:
-                u1 = np.sign(u) * 10 * u1 / (u1 + u2) * self.angle_factor
-                u2 = np.sign(u) * 10 * u2 / (u1 + u2) * (1 - self.angle_factor)
+                u1 = np.sign(u) * 10 * u1 / (u1 * self.angle_factor + u2) * self.angle_factor
+                u2 = np.sign(u) * 10 * u2 / (u1 * self.angle_factor + u2)
                 u = u1 + u2
 
             self.e1_prev4 = self.e1_prev3
