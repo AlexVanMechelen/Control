@@ -142,7 +142,7 @@ class PendulumGraph:
                                [self.pendulum_start[1], self.pendulum_end[1]])
         self.cart.set_x(x-self.cart_l)                         
         #self.text.set_text(r'x = {:+.2f}, v = {:+.2f}, $\phi$ = {:.2f}, F = {:+.2f}'.format(x, v, phi, F))
-        self.text.set_text(f'x = {x:+.2f}, v = {v:+.2f}, $\phi$ = {phi:.2f}, F = {F:+.2f}')
+        self.text.set_text(f'x = {x:+.2f}, v = {v:+.2f}, $\phi$ = {phi:.2f}, $\omega$ = {omega:.2f}, F = {F:+.2f}')
 
         return self.cart, self.pendulum, self.text
 
