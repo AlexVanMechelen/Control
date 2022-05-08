@@ -33,9 +33,13 @@ class Pendulum(System):
         if self.add_noise:
             measurement[0] += np.random.normal(scale=0.01)
             measurement[1] += np.random.normal(scale=0.005)
+        if abs(measurement[1]) > np.pi:
+            measurement[1] = measurement[1]-np.sign(measurement[1])*2*np.pi
         return measurement
 
     def get_measurement_exact(self):
+        if abs(self.state[2]) > np.pi:
+            self.state[2] = self.state[2]-np.sign(self.state[2])*2*np.pi
         return self.state
     
     def _constrain_input(self, u):
@@ -57,8 +61,8 @@ class Pendulum(System):
         elif x > length-2*self.params['cart_length']/2:
             x = length-2*self.params['cart_length']/2
             v = -DAMP_COEFF*v
-        if abs(phi) > np.pi:
-            phi = phi-np.sign(phi)*2*np.pi
+        #if abs(phi) > np.pi:
+            #phi = phi-np.sign(phi)*2*np.pi
         # if phi > np.pi/2.1:
         #     phi = np.pi/2.1
         #     omega = -DAMP_COEFF*omega

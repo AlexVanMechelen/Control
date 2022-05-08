@@ -114,6 +114,8 @@ class Controller:
             B = np.reshape(parameters[37:41], (1, 4), order='F')
             C = np.reshape(parameters[41:49], (2, 4), order='F')
 
+            self.x_hat[2] = np.pi
+
             # Set observer params
             self.observer.set_arrays(L, A, B, C)
 
