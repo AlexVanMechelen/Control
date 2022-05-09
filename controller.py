@@ -37,7 +37,7 @@ class Controller:
         self.x_hat = np.zeros((4, 1))
         self.observer = Observer()
 
-        self.angle_factor = 6 / 10 
+        self.angle_factor = 11 / 10 
 
     
     def set_params(self, parameters):
@@ -210,8 +210,8 @@ class Controller:
             u = u1 + u2
 
             if abs(u) > 10:
-                u1 = np.sign(u) * 10 * u1 / (u1 + u2) #* self.angle_factor
-                u2 = np.sign(u) * 10 * u2 / (u1 + u2) #* (1-self.angle_factor)
+                u1 = np.sign(u) * 10 * u1 / (u1 + u2) * self.angle_factor
+                u2 = np.sign(u) * 10 * u2 / (u1 + u2) * (1-self.angle_factor)
                 u = u1 + u2
 
             self.e1_prev4 = self.e1_prev3
