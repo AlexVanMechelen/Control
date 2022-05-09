@@ -263,9 +263,17 @@ class Observer:
 
     def __call__(self, u, y, x_hat):
         "Call observer with this method; Inputs: command u and measurement y"
-        if abs(y[1]) > np.pi/3:
+        if abs(y[1]) > np.pi/3:  # Wanneer de hypothese van de kleine hoeken niet meer geldt, schakelen we over tot
+            # een snelle observer. Hier hebben we immers minder vertrouwen in het systeem, dat een gelineariseerde
+            # versie is van het echte systeem, gebruik makend van de hypothese van de kleine hoeken.
+            # Bovendien zal de observer zo de grote sprongen in hoek kunnen volgen die zich voordoen wanner de pendulum
+            # zich onderaan bevindt en de hoek van -pi naar pi springt of omgekeerd.
             x_hat = np.matmul(self.A1 - np.matmul(self.L1,self.C1),x_hat) + np.transpose(self.B1*u) + [[x] for x in np.matmul(self.L1,y)]
-        else:
+        else:  # Wanneer de hypothese van de kleine hoeken in voldoende mate geldt, schakelen we over tot een tragere
+            # observer. Het gelineariseerd systeem vormt namelijk in deze regio van de hoeken een goede benadering van
+            # het werkelijk systeem. De tragere observer zal in dit domein meer vertrouwen steken in ons model en het
+            # effect van de ruis minimaliseren. Toch blijven we de traagste pool van de observer sneller kiezen dan de
+            # traagste pool van het systeem in closed loop, om een goede waarnemer te verzekeren.
             x_hat = np.matmul(self.A1 - np.matmul(self.L2,self.C1),x_hat) + np.transpose(self.B1*u) + [[x] for x in np.matmul(self.L2,y)]
         return x_hat
 

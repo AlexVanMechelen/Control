@@ -90,18 +90,20 @@ set(groot,'defaultLegendLocation','best')
 set(groot,'defaultAxesGridAlpha',0.5)
 set(groot,'defaultAxesLineWidth',1)
 set(groot,'defaultConstantLineLineWidth',2)
+LW = 1; % LineWidth
 %%
 xtop = x_hat;
 xbot = x_hat;
 xtop(~t_obs1) = nan;
 xbot(t_obs1) = nan;
 
-tiles = tiledlayout(2,2); 
+figure;
+tiles = tiledlayout(2,2);
 %subplot(2,2,1)
 nexttile
 hold on;
-plot(ts, xtop,'r', ts, xbot, 'b');ylabel('Positie [m]'); xlabel('t [s]');
-plot(ts,real_x,'g','LineWidth',1.2)
+plot(ts, xtop,'r', ts, xbot, 'b','LineWidth',LW);ylabel('Positie [m]'); xlabel('t [s]');
+plot(ts,real_x,'g','LineWidth',LW)
 legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 thetatop = theta_hat;
@@ -112,8 +114,8 @@ thetabot(t_obs1) = nan;
 %subplot(2,2,2)
 nexttile
 hold on; 
-plot(ts, thetatop,'r', ts, thetabot, 'b');ylabel('Theta [rad]'); xlabel('t [s]');
-plot(ts,real_theta,'g','LineWidth',1.2)
+plot(ts, thetatop,'r', ts, thetabot, 'b','LineWidth',LW);ylabel('Theta [rad]'); xlabel('t [s]');
+plot(ts,real_theta,'g','LineWidth',LW)
 legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 vtop = v_hat;
@@ -124,8 +126,8 @@ vbot(t_obs1) = nan;
 %subplot(2,2,3)
 nexttile
 hold on; 
-plot(ts, vtop,'r', ts, vbot, 'b'); ylabel('Snelheid [m/s]'); xlabel('t [s]');
-plot(ts,real_v,'g','LineWidth',1.2)
+plot(ts, vtop,'r', ts, vbot, 'b','LineWidth',LW); ylabel('Snelheid [m/s]'); xlabel('t [s]');
+plot(ts,real_v,'g','LineWidth',LW)
 legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 theta_dottop = theta_dot_hat;
@@ -136,49 +138,50 @@ theta_dotbot(t_obs1) = nan;
 %subplot(2,2,4)
 nexttile
 hold on; 
-plot(ts, theta_dottop,'r', ts, theta_dotbot, 'b'); ylabel('Snelheid [rad/s]'); xlabel('t [s]');
-plot(ts,real_theta_dot,'g','LineWidth',1.2)
+plot(ts, theta_dottop,'r', ts, theta_dotbot, 'b','LineWidth',LW); ylabel('Hoeksnelheid [rad/s]'); xlabel('t [s]');
+plot(ts,real_theta_dot,'g','LineWidth',LW)
 legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
-%exportgraphics(tiles,PATH+"/Plots-Video/Observer.png")
+exportgraphics(tiles,PATH+"/Plots-Video/Observer.png",'Resolution',1000)
 %%
 v_est = ( x(2:end)-x(1:end-1) )/Ts;
 theta_dot_est = ( theta(2:end)-theta(1:end-1) )/Ts;
 
+figure;
 tiles = tiledlayout(2,2); 
 nexttile
 hold on;
-plot(ts(2:end), v_hat(2:end),'b');
+plot(ts(2:end), v_hat(2:end),'b','LineWidth',LW);
 ylabel('Snelheid [m/s]'); xlabel('t [s]');
-plot(ts(2:end),real_v(2:end),'g','LineWidth',1.2)
+plot(ts(2:end),real_v(2:end),'g','LineWidth',LW)
 legend('Observer','Werkelijke waarde')
 
 %subplot(2,2,2)
 nexttile
 hold on; 
-plot(ts(2:end), theta_dot_hat(2:end),'b');
+plot(ts(2:end), theta_dot_hat(2:end),'b','LineWidth',LW);
 ylabel('Snelheid [rad/s]'); xlabel('t [s]');
-plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',1.2)
+plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',LW)
 legend('Observer','Werkelijke waarde')
 
 %subplot(2,2,3)
 nexttile
 hold on; 
-plot(ts(2:end), v_est,'b'); 
+plot(ts(2:end), v_est,'b','LineWidth',LW); 
 ylabel('Snelheid [m/s]'); xlabel('t [s]');
-plot(ts(2:end),real_v(2:end),'g','LineWidth',1.2)
+plot(ts(2:end),real_v(2:end),'g','LineWidth',LW)
 legend('Derivatieve observer','Werkelijke waarde')
 
 %subplot(2,2,4)
 nexttile
 hold on; 
-plot(ts(2:end), theta_dot_est,'b'); 
-ylabel('Snelheid [rad/s]'); xlabel('t [s]');
-plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',1.2)
+plot(ts(2:end), theta_dot_est,'b','LineWidth',LW); 
+ylabel('Hoeksnelheid [rad/s]'); xlabel('t [s]');
+plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',LW)
 legend('Derivatieve observer','Werkelijke waarde')
 
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
-exportgraphics(tiles,PATH+"/Plots-Video/ObserverDerivatieve.png")
+exportgraphics(tiles,PATH+"/Plots-Video/Observer_Derivative.png",'Resolution',1000)
