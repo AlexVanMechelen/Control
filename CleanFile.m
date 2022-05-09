@@ -75,19 +75,19 @@ real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:)
 
 t_obs1 = find(abs(theta)>pi/3);
 %% Opmaak
-set(groot,'defaulttextinterpreter','latex');
-set(groot, 'defaultAxesTickLabelInterpreter','latex');
-set(groot, 'defaultLegendInterpreter','latex');
-set(groot,'defaultAxesXGrid','on')
-set(groot,'defaultAxesYGrid','on')
-set(groot,'defaultLineMarkerSize',35)
-set(groot,'defaultAxesFontSize',20)
-set(groot,'defaultFigurePosition',[0 0 1800 900])
-set(groot,'defaultLineLineWidth',2)
-set(groot,'defaultLegendLocation','best')
-set(groot,'defaultAxesGridAlpha',0.5)
-set(groot,'defaultAxesLineWidth',1)
-set(groot,'defaultConstantLineLineWidth',2)
+% set(groot,'defaulttextinterpreter','latex');
+% set(groot, 'defaultAxesTickLabelInterpreter','latex');
+% set(groot, 'defaultLegendInterpreter','latex');
+% set(groot,'defaultAxesXGrid','on')
+% set(groot,'defaultAxesYGrid','on')
+% set(groot,'defaultLineMarkerSize',35)
+% set(groot,'defaultAxesFontSize',20)
+% set(groot,'defaultFigurePosition',[0 0 1800 900])
+% set(groot,'defaultLineLineWidth',2)
+% set(groot,'defaultLegendLocation','best')
+% set(groot,'defaultAxesGridAlpha',0.5)
+% set(groot,'defaultAxesLineWidth',1)
+% set(groot,'defaultConstantLineLineWidth',2)
 %%
 xtop = x_hat;
 xbot = x_hat;
