@@ -37,7 +37,7 @@ class Controller:
         self.x_hat = np.zeros((4, 1))
         self.observer = Observer()
 
-        self.angle_factor = 11 / 10  # Importance of angle control when force above maxF (1 is equally important | f < 1 is less important | f > 1 is more important)
+        self.angle_factor = 6 / 10 
 
     
     def set_params(self, parameters):
@@ -109,15 +109,16 @@ class Controller:
             self.p21  = parameters[11]
             self.p22  = parameters[12]
 
-            L = np.reshape(parameters[13:21], (4, 2), order='F')
-            A = np.reshape(parameters[21:37], (4, 4), order='F')
-            B = np.reshape(parameters[37:41], (1, 4), order='F')
-            C = np.reshape(parameters[41:49], (2, 4), order='F')
+            L1 = np.reshape(parameters[13:21], (4, 2), order='F')
+            A1 = np.reshape(parameters[21:37], (4, 4), order='F')
+            B1 = np.reshape(parameters[37:41], (1, 4), order='F')
+            C1 = np.reshape(parameters[41:49], (2, 4), order='F')
+            L2 = np.reshape(parameters[49:57], (4, 2), order='F')
 
             self.x_hat[2] = np.pi
 
             # Set observer params
-            self.observer.set_arrays(L, A, B, C)
+            self.observer.set_arrays(L1, A1, B1, C1, L2)
 
         elif params.mode == "STATE_SPACE":
             pass
@@ -170,8 +171,8 @@ class Controller:
             u = u1 + u2
 
             if abs(u) > 10:
-                u1 = np.sign(u) * 10 * u1 / (u1 + u2 * self.angle_factor) 
-                u2 = np.sign(u) * 10 * u2 / (u1 + u2 * self.angle_factor) * self.angle_factor
+                u1 = np.sign(u) * 10 * u1 / (u1 + u2) * self.angle_factor
+                u2 = np.sign(u) * 10 * u2 / (u1 + u2) * (1-self.angle_factor)
                 u = u1 + u2
 
             self.e1_prev4 = self.e1_prev3
@@ -209,8 +210,8 @@ class Controller:
             u = u1 + u2
 
             if abs(u) > 10:
-                u1 = np.sign(u) * 10 * u1 / (u1 + u2) * self.angle_factor
-                u2 = np.sign(u) * 10 * u2 / (u1 + u2) * (1-self.angle_factor)
+                u1 = np.sign(u) * 10 * u1 / (u1 + u2) #* self.angle_factor
+                u2 = np.sign(u) * 10 * u2 / (u1 + u2) #* (1-self.angle_factor)
                 u = u1 + u2
 
             self.e1_prev4 = self.e1_prev3
@@ -241,21 +242,25 @@ class Controller:
 class Observer:
     "Implement your observer"
     def __init__(self):
-        self.L = np.zeros((4, 2))
-        self.A = np.zeros((4, 4))
-        self.B = np.zeros((1, 4))
-        self.C = np.zeros((2, 4))
+        self.L1 = np.zeros((4, 2))
+        self.A1 = np.zeros((4, 4))
+        self.B1 = np.zeros((1, 4))
+        self.C1 = np.zeros((2, 4))
+        self.L2 = np.zeros((4, 2))
 
-    def set_arrays(self, L, A, B, C):
-        self.L = np.array(L)
-        self.A = np.array(A)
-        self.B = np.array(B)
-        self.C = np.array(C)
+    def set_arrays(self, L1, A1, B1, C1, L2):
+        self.L1 = np.array(L1)
+        self.A1 = np.array(A1)
+        self.B1 = np.array(B1)
+        self.C1 = np.array(C1)
+        self.L2 = np.array(L2)
 
     def __call__(self, u, y, x_hat):
         "Call observer with this method; Inputs: command u and measurement y"
-        #print(x_hat)
-        x_hat = np.matmul(self.A - np.matmul(self.L,self.C),x_hat) + np.transpose(self.B*u) + [[x] for x in np.matmul(self.L,y)]
+        if abs(y[1]) > np.pi/3:
+            x_hat = np.matmul(self.A1 - np.matmul(self.L1,self.C1),x_hat) + np.transpose(self.B1*u) + [[x] for x in np.matmul(self.L1,y)]
+        else:
+            x_hat = np.matmul(self.A1 - np.matmul(self.L2,self.C1),x_hat) + np.transpose(self.B1*u) + [[x] for x in np.matmul(self.L2,y)]
         return x_hat
 
 
