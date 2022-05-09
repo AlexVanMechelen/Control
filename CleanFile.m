@@ -36,6 +36,13 @@ CLASSICAL_COMB   = 2;
 OBSERVER_TEST = 3;
 STATE_SPACE = 4;
 EXTENDED    = 5;
+%% Startup Python
+if ispc % Check for Windows OS
+    system('closeSessions.bat');
+    pause(1)
+    system('start cmd /k "title SYSTEM & python system.py"');
+    system('start cmd /k "title CONTROLLER & python controller.py"');
+end
 %% Discreet
 Ts = 0.05;
 Sd = c2d(S,Ts);
