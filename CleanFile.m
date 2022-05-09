@@ -82,7 +82,9 @@ t_obs1 = find(abs(theta)>pi/3);
 % set(groot,'defaultAxesYGrid','on')
 % set(groot,'defaultLineMarkerSize',35)
 % set(groot,'defaultAxesFontSize',20)
-% set(groot,'defaultFigurePosition',[0 0 1800 900])
+% set(0,'units','pixels');
+% ans = get(0,'ScreenSize');
+% set(groot,'defaultFigurePosition',[0 0 ans(3) ans(4)])
 % set(groot,'defaultLineLineWidth',2)
 % set(groot,'defaultLegendLocation','best')
 % set(groot,'defaultAxesGridAlpha',0.5)
@@ -140,4 +142,4 @@ legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
-exportgraphics(tiles,PATH+"/Plots-Video/Observer.png")
+%exportgraphics(tiles,PATH+"/Plots-Video/Observer.png")
