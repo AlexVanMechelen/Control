@@ -75,21 +75,21 @@ real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:)
 
 t_obs1 = find(abs(theta)>pi/3);
 %% Opmaak
-% set(groot,'defaulttextinterpreter','latex');
-% set(groot, 'defaultAxesTickLabelInterpreter','latex');
-% set(groot, 'defaultLegendInterpreter','latex');
-% set(groot,'defaultAxesXGrid','on')
-% set(groot,'defaultAxesYGrid','on')
-% set(groot,'defaultLineMarkerSize',35)
-% set(groot,'defaultAxesFontSize',20)
-% set(0,'units','pixels');
-% ans = get(0,'ScreenSize');
-% set(groot,'defaultFigurePosition',[0 0 ans(3) ans(4)])
-% set(groot,'defaultLineLineWidth',2)
-% set(groot,'defaultLegendLocation','best')
-% set(groot,'defaultAxesGridAlpha',0.5)
-% set(groot,'defaultAxesLineWidth',1)
-% set(groot,'defaultConstantLineLineWidth',2)
+set(groot,'defaulttextinterpreter','latex');
+set(groot, 'defaultAxesTickLabelInterpreter','latex');
+set(groot, 'defaultLegendInterpreter','latex');
+set(groot,'defaultAxesXGrid','on')
+set(groot,'defaultAxesYGrid','on')
+set(groot,'defaultLineMarkerSize',35)
+set(groot,'defaultAxesFontSize',20)
+set(0,'units','pixels');
+ans = get(0,'ScreenSize');
+set(groot,'defaultFigurePosition',[0 0 ans(3) ans(4)])
+set(groot,'defaultLineLineWidth',2)
+set(groot,'defaultLegendLocation','best')
+set(groot,'defaultAxesGridAlpha',0.5)
+set(groot,'defaultAxesLineWidth',1)
+set(groot,'defaultConstantLineLineWidth',2)
 %%
 xtop = x_hat;
 xbot = x_hat;
@@ -143,3 +143,42 @@ legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
 %exportgraphics(tiles,PATH+"/Plots-Video/Observer.png")
+%%
+v_est = ( x(2:end)-x(1:end-1) )/Ts;
+theta_dot_est = ( theta(2:end)-theta(1:end-1) )/Ts;
+
+tiles = tiledlayout(2,2); 
+nexttile
+hold on;
+plot(ts(2:end), v_hat(2:end),'b');
+ylabel('Snelheid [m/s]'); xlabel('t [s]');
+plot(ts(2:end),real_v(2:end),'g','LineWidth',1.2)
+legend('Observer','Werkelijke waarde')
+
+%subplot(2,2,2)
+nexttile
+hold on; 
+plot(ts(2:end), theta_dot_hat(2:end),'b');
+ylabel('Snelheid [rad/s]'); xlabel('t [s]');
+plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',1.2)
+legend('Observer','Werkelijke waarde')
+
+%subplot(2,2,3)
+nexttile
+hold on; 
+plot(ts(2:end), v_est,'b'); 
+ylabel('Snelheid [m/s]'); xlabel('t [s]');
+plot(ts(2:end),real_v(2:end),'g','LineWidth',1.2)
+legend('Derivatieve observer','Werkelijke waarde')
+
+%subplot(2,2,4)
+nexttile
+hold on; 
+plot(ts(2:end), theta_dot_est,'b'); 
+ylabel('Snelheid [rad/s]'); xlabel('t [s]');
+plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',1.2)
+legend('Derivatieve observer','Werkelijke waarde')
+
+tiles.TileSpacing = 'tight';
+tiles.Padding = "tight";
+exportgraphics(tiles,PATH+"/Plots-Video/ObserverDerivatieve.png")

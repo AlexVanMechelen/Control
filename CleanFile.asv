@@ -1,4 +1,5 @@
 clearvars; clc; close all
+PATH = pwd;
 addpath("matlab_tools")
 %% Data
 L = 0.3;
@@ -73,6 +74,22 @@ x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
 real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
 
 t_obs1 = find(abs(theta)>pi/3);
+%% Opmaak
+% set(groot,'defaulttextinterpreter','latex');
+% set(groot, 'defaultAxesTickLabelInterpreter','latex');
+% set(groot, 'defaultLegendInterpreter','latex');
+% set(groot,'defaultAxesXGrid','on')
+% set(groot,'defaultAxesYGrid','on')
+% set(groot,'defaultLineMarkerSize',35)
+% set(groot,'defaultAxesFontSize',20)
+% set(0,'units','pixels');
+% ans = get(0,'ScreenSize');
+% set(groot,'defaultFigurePosition',[0 0 ans(3) ans(4)])
+% set(groot,'defaultLineLineWidth',2)
+% set(groot,'defaultLegendLocation','best')
+% set(groot,'defaultAxesGridAlpha',0.5)
+% set(groot,'defaultAxesLineWidth',1)
+% set(groot,'defaultConstantLineLineWidth',2)
 %%
 xtop = x_hat;
 xbot = x_hat;
@@ -83,8 +100,8 @@ tiles = tiledlayout(2,2);
 %subplot(2,2,1)
 nexttile
 hold on;
-plot(ts, xtop,'r', ts, xbot, 'b','LineWidth',1);ylabel('Positie [m]'); xlabel('t [s]');
-plot(ts,real_x,'g')
+plot(ts, xtop,'r', ts, xbot, 'b');ylabel('Positie [m]'); xlabel('t [s]');
+plot(ts,real_x,'g','LineWidth',1.2)
 legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 thetatop = theta_hat;
@@ -95,8 +112,8 @@ thetabot(t_obs1) = nan;
 %subplot(2,2,2)
 nexttile
 hold on; 
-plot(ts, thetatop,'r', ts, thetabot, 'b','LineWidth',1);ylabel('Theta [rad]'); xlabel('t [s]');
-plot(ts,real_theta,'g')
+plot(ts, thetatop,'r', ts, thetabot, 'b');ylabel('Theta [rad]'); xlabel('t [s]');
+plot(ts,real_theta,'g','LineWidth',1.2)
 legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 vtop = v_hat;
@@ -107,8 +124,8 @@ vbot(t_obs1) = nan;
 %subplot(2,2,3)
 nexttile
 hold on; 
-plot(ts, vtop,'r', ts, vbot, 'b','LineWidth',1); ylabel('Snelheid [m/s]'); xlabel('t [s]');
-plot(ts,real_v,'g')
+plot(ts, vtop,'r', ts, vbot, 'b'); ylabel('Snelheid [m/s]'); xlabel('t [s]');
+plot(ts,real_v,'g','LineWidth',1.2)
 legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 theta_dottop = theta_dot_hat;
@@ -119,10 +136,44 @@ theta_dotbot(t_obs1) = nan;
 %subplot(2,2,4)
 nexttile
 hold on; 
-plot(ts, theta_dottop,'r', ts, theta_dotbot, 'b','LineWidth',1); ylabel('Snelheid [rad/s]'); xlabel('t [s]');
-plot(ts,real_theta_dot,'g')
+plot(ts, theta_dottop,'r', ts, theta_dotbot, 'b'); ylabel('Snelheid [rad/s]'); xlabel('t [s]');
+plot(ts,real_theta_dot,'g','LineWidth',1.2)
 legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
-exp
+%exportgraphics(tiles,PATH+"/Plots-Video/Observer.png")
+%%
+v_est = ( x(2:end)-x(1:end-1) )/Ts;
+theta_dot_est = ( theta(2:end)-theta(1:end-1) )/Ts;
+
+tiles = tiledlayout(2,2); 
+nexttile
+hold on;
+plot(ts(2:end), v_hat(2:end));ylabel('Positie [m]'); xlabel('t [s]');
+plot(ts(2:end),real_x,'g','LineWidth',1.2)
+legend('Observer','Werkelijke waarde')
+
+%subplot(2,2,2)
+nexttile
+hold on; 
+plot(ts(2:end), theta_dot_hat(2:end));ylabel('Theta [rad]'); xlabel('t [s]');
+plot(ts(2:end),real_theta,'g','LineWidth',1.2)
+legend('Observer','Werkelijke waarde')
+
+%subplot(2,2,3)
+nexttile
+hold on; 
+plot(ts(2:end), vtop,'r', ts(2:end), vbot, 'b'); ylabel('Snelheid [m/s]'); xlabel('t [s]');
+plot(ts(2:end),real_v,'g','LineWidth',1.2)
+legend('Observer','Werkelijke waarde')
+
+%subplot(2,2,4)
+nexttile
+hold on; 
+plot(ts(2:end), theta_dottop,'r', ts(2:end), theta_dotbot, 'b'); ylabel('Snelheid [rad/s]'); xlabel('t [s]');
+plot(ts(2:end),real_theta_dot,'g','LineWidth',1.2)
+legend('Observer','Werkelijke waarde')
+
+tiles.TileSpacing = 'tight';
+tiles.Padding = "tight";
