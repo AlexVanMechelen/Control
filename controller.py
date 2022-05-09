@@ -37,7 +37,9 @@ class Controller:
         self.x_hat = np.zeros((4, 1))
         self.observer = Observer()
 
-        self.angle_factor = 11 / 10 
+        self.angle_factor = 11 / 10
+
+        self.Kd = np.zeros((1, 4))
 
     
     def set_params(self, parameters):
@@ -121,7 +123,8 @@ class Controller:
             self.observer.set_arrays(L1, A1, B1, C1, L2)
 
         elif params.mode == "STATE_SPACE":
-            pass
+            self.Kd = parameters
+
         elif params.mode == 'EXTENDED':
             pass
 
@@ -231,7 +234,10 @@ class Controller:
             out = list(y)+[u]+list(np.concatenate(self.x_hat))
 
         elif params.mode == 'STATE_SPACE':
-            pass
+            e2 = - y[1]
+            u = e2 - np.matmul(self.Kd, self.x_hat)
+            out = list(y) + [u]
+
         elif params.mode == 'EXTENDED':
             pass
         else:
