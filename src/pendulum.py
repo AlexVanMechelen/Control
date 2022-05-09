@@ -20,7 +20,7 @@ class Pendulum(System):
             'm':            0.2,            # mass of pendulum (kg)
             'friction':     0.1,            # friction coefficient for cart
             'max_F':        10.,            # max allowed force (N)
-            'rail_length':  5.,             # length of the rail
+            'rail_length':  5,             # length of the rail
             'cart_length':  0.2,            # half length of cart
         }
         self.add_noise = add_noise
