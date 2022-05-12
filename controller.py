@@ -134,10 +134,11 @@ class Controller:
             L2 = np.reshape(parameters[40:48], (4, 2), order='F')
 
             self.x_hat = np.zeros((4, 1))
-            self.x_hat[2] = np.pi
+            #self.x_hat[2] = np.pi
 
             # Set observer params
             self.observer.set_arrays(L1, A1, B1, C1, L2)
+            self.x_hat[2] = np.pi
 
         elif params.mode == 'EXTENDED':
             pass
@@ -248,7 +249,6 @@ class Controller:
             out = list(y) + [u] + list(np.concatenate(self.x_hat))
 
         elif params.mode == 'STATE_SPACE':
-            y[0] = params.w - y[0]
             u = -np.matmul(self.Kd, self.x_hat)
             if abs(u) > 10:
                 u = np.sign(u)*10
