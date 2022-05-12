@@ -151,7 +151,7 @@ legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
-%exportgraphics(tiles,PATH+"/Plots-Video/Observer.png",'Resolution',20)
+%%exportgraphics(tiles,PATH+"/Plots-Video/Observer.png",'Resolution',300)
 %%
 v_est = ( x(2:end)-x(1:end-1) )/Ts;
 theta_dot_est = ( theta(2:end)-theta(1:end-1) )/Ts;
@@ -191,7 +191,7 @@ legend('Derivatieve observer','Werkelijke waarde')
 
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
-%exportgraphics(tiles,PATH+"/Plots-Video/Observer_Derivative.png",'Resolution',20)
+%%exportgraphics(tiles,PATH+"/Plots-Video/Observer_Derivative.png",'Resolution',300)
 %% State Space Feedback
 Q = diag([38,0,10000,0]);
 R = 1;
@@ -266,7 +266,7 @@ legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
-exportgraphics(tiles,PATH+"/Plots-Video/StateSpace.png",'Resolution',20)
+%exportgraphics(tiles,PATH+"/Plots-Video/StateSpace.png",'Resolution',300)
 %%
 v_est = ( x(2:end)-x(1:end-1) )/Ts;
 theta_dot_est = ( theta(2:end)-theta(1:end-1) )/Ts;
@@ -306,4 +306,4 @@ legend('Derivatieve observer','Werkelijke waarde')
 
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
-exportgraphics(tiles,PATH+"/Plots-Video/StateSpace_Derivative.png",'Resolution',20)
+%exportgraphics(tiles,PATH+"/Plots-Video/StateSpace_Derivative.png",'Resolution',300)
