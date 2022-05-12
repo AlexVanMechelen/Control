@@ -123,7 +123,19 @@ class Controller:
             self.observer.set_arrays(L1, A1, B1, C1, L2)
 
         elif params.mode == "STATE_SPACE":
-            self.Kd = parameters
+            self.u1_prev1 = 0.0
+            self.Kd = parameters[0:4]
+
+            L1 = np.reshape(parameters[4:12], (4, 2), order='F')
+            A1 = np.reshape(parameters[12:28], (4, 4), order='F')
+            B1 = np.reshape(parameters[28:32], (1, 4), order='F')
+            C1 = np.reshape(parameters[32:40], (2, 4), order='F')
+            L2 = np.reshape(parameters[40:48], (4, 2), order='F')
+
+            self.x_hat[2] = np.pi
+
+            # Set observer params
+            self.observer.set_arrays(L1, A1, B1, C1, L2)
 
         elif params.mode == 'EXTENDED':
             pass
@@ -231,12 +243,13 @@ class Controller:
             self.u2_prev2 = self.u2_prev1
             self.u2_prev1 = u2
             self.x_hat = self.observer(u, y, self.x_hat)
-            out = list(y)+[u]+list(np.concatenate(self.x_hat))
+            out = list(y) + [u] + list(np.concatenate(self.x_hat))
 
         elif params.mode == 'STATE_SPACE':
-            e2 = - y[1]
-            u = e2 - np.matmul(self.Kd, self.x_hat)
-            out = list(y) + [u]
+            u = -np.matmul(self.Kd, self.x_hat)
+            self.x_hat = self.observer(u, y, self.x_hat)
+            self.u1_prev1 = u
+            out = list(y) + [u] + list(np.concatenate(self.x_hat))
 
         elif params.mode == 'EXTENDED':
             pass
