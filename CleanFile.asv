@@ -36,6 +36,13 @@ CLASSICAL_COMB   = 2;
 OBSERVER_TEST = 3;
 STATE_SPACE = 4;
 EXTENDED    = 5;
+%% Startup Python
+if ispc % Check for Windows OS
+    system('closeSessions.bat');
+    pause(1)
+    system('start cmd /k "title SYSTEM & python system.py"');
+    system('start cmd /k "title CONTROLLER & python controller.py"');
+end
 %% Discreet
 Ts = 0.05;
 Sd = c2d(S,Ts);
@@ -55,9 +62,9 @@ L1 = L1';
 ps_d2 = [0.7,0.8,zs1(3),zs1(3)];
 L2 = place(Sd.A', Sd.C', ps_d2);
 L2 = L2';
-%% Simulatie
+%% Simulatie State Observer
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
-n_samples = 1000;
+n_samples = 20;
 ts = (0:n_samples-1)*Ts;
 mode = OBSERVER_TEST;
 [~,G1] = zero(Rd1);
@@ -90,7 +97,8 @@ set(groot,'defaultLegendLocation','best')
 set(groot,'defaultAxesGridAlpha',0.5)
 set(groot,'defaultAxesLineWidth',1)
 set(groot,'defaultConstantLineLineWidth',2)
-%%
+LW = 1; % LineWidth
+%% Plots
 xtop = x_hat;
 xbot = x_hat;
 xtop(~t_obs1) = nan;
@@ -101,8 +109,8 @@ tiles = tiledlayout(2,2);
 %subplot(2,2,1)
 nexttile
 hold on;
-plot(ts, xtop,'r', ts, xbot, 'b','LineWidth',1.2);ylabel('Positie [m]'); xlabel('t [s]');
-plot(ts,real_x,'g','LineWidth',1.2)
+plot(ts, xtop,'r', ts, xbot, 'b','LineWidth',LW);ylabel('Positie [m]'); xlabel('t [s]');
+plot(ts,real_x,'g','LineWidth',LW)
 legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 thetatop = theta_hat;
@@ -113,8 +121,8 @@ thetabot(t_obs1) = nan;
 %subplot(2,2,2)
 nexttile
 hold on; 
-plot(ts, thetatop,'r', ts, thetabot, 'b','LineWidth',1.2);ylabel('Theta [rad]'); xlabel('t [s]');
-plot(ts,real_theta,'g','LineWidth',1.2)
+plot(ts, thetatop,'r', ts, thetabot, 'b','LineWidth',LW);ylabel('Theta [rad]'); xlabel('t [s]');
+plot(ts,real_theta,'g','LineWidth',LW)
 legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 vtop = v_hat;
@@ -125,8 +133,8 @@ vbot(t_obs1) = nan;
 %subplot(2,2,3)
 nexttile
 hold on; 
-plot(ts, vtop,'r', ts, vbot, 'b','LineWidth',1.2); ylabel('Snelheid [m/s]'); xlabel('t [s]');
-plot(ts,real_v,'g','LineWidth',1.2)
+plot(ts, vtop,'r', ts, vbot, 'b','LineWidth',LW); ylabel('Snelheid [m/s]'); xlabel('t [s]');
+plot(ts,real_v,'g','LineWidth',LW)
 legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 theta_dottop = theta_dot_hat;
@@ -137,13 +145,13 @@ theta_dotbot(t_obs1) = nan;
 %subplot(2,2,4)
 nexttile
 hold on; 
-plot(ts, theta_dottop,'r', ts, theta_dotbot, 'b','LineWidth',1.2); ylabel('Snelheid [rad/s]'); xlabel('t [s]');
-plot(ts,real_theta_dot,'g','LineWidth',1.2)
+plot(ts, theta_dottop,'r', ts, theta_dotbot, 'b','LineWidth',LW); ylabel('Hoeksnelheid [rad/s]'); xlabel('t [s]');
+plot(ts,real_theta_dot,'g','LineWidth',LW)
 legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
 
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
-exportgraphics(tiles,PATH+"/Plots-Video/Observer.png",'Resolution',1000)
+%%exportgraphics(tiles,PATH+"/Plots-Video/Observer.png",'Resolution',300)
 %%
 v_est = ( x(2:end)-x(1:end-1) )/Ts;
 theta_dot_est = ( theta(2:end)-theta(1:end-1) )/Ts;
@@ -152,35 +160,150 @@ figure;
 tiles = tiledlayout(2,2); 
 nexttile
 hold on;
-plot(ts(2:end), v_hat(2:end),'b');
+plot(ts(2:end), v_hat(2:end),'b','LineWidth',LW);
 ylabel('Snelheid [m/s]'); xlabel('t [s]');
-plot(ts(2:end),real_v(2:end),'g','LineWidth',1.2)
+plot(ts(2:end),real_v(2:end),'g','LineWidth',LW)
 legend('Observer','Werkelijke waarde')
 
 %subplot(2,2,2)
 nexttile
 hold on; 
-plot(ts(2:end), theta_dot_hat(2:end),'b');
+plot(ts(2:end), theta_dot_hat(2:end),'b','LineWidth',LW);
 ylabel('Snelheid [rad/s]'); xlabel('t [s]');
-plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',1.2)
+plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',LW)
 legend('Observer','Werkelijke waarde')
 
 %subplot(2,2,3)
 nexttile
 hold on; 
-plot(ts(2:end), v_est,'b'); 
+plot(ts(2:end), v_est,'b','LineWidth',LW); 
 ylabel('Snelheid [m/s]'); xlabel('t [s]');
-plot(ts(2:end),real_v(2:end),'g','LineWidth',1.2)
+plot(ts(2:end),real_v(2:end),'g','LineWidth',LW)
 legend('Derivatieve observer','Werkelijke waarde')
 
 %subplot(2,2,4)
 nexttile
 hold on; 
-plot(ts(2:end), theta_dot_est,'b','LineWidth',1.2); 
-ylabel('Snelheid [rad/s]'); xlabel('t [s]');
-plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',1.2)
+plot(ts(2:end), theta_dot_est,'b','LineWidth',LW); 
+ylabel('Hoeksnelheid [rad/s]'); xlabel('t [s]');
+plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',LW)
 legend('Derivatieve observer','Werkelijke waarde')
 
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
-exportgraphics(tiles,PATH+"/Plots-Video/ObserverDerivatieve.png",'Resolution',1000)
+%%exportgraphics(tiles,PATH+"/Plots-Video/Observer_Derivative.png",'Resolution',300)
+%% State Space Feedback
+Q = diag([38,,10000,0]);
+R = 1;
+[Kd,S,e] = dlqr(Sd.A,Sd.B,Q,R)
+%% Simulatie SSF
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
+n_samples = 400;
+ts = (0:n_samples-1)*Ts;
+mode = STATE_SPACE;
+[~,G1] = zero(Rd1);
+[~,G2] = zero(Rd2);
+w = 0;
+set_mode_params(arduino, mode, w, cat(1,reshape(Kd,[],1),reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1)));
+reset_system(arduino);
+Y = get_response(arduino, w, n_samples);
+close_connection(arduino)
+clear arduino
+%% Plots
+x = Y(1,:); theta = Y(2,:); u = Y(3,:);
+x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
+real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
+t_obs1 = find(abs(theta)>pi/3);
+xtop = x_hat;
+xbot = x_hat;
+xtop(~t_obs1) = nan;
+xbot(t_obs1) = nan;
+
+figure;
+tiles = tiledlayout(2,2);
+%subplot(2,2,1)
+nexttile
+hold on;
+plot(ts, xtop,'r', ts, xbot, 'b','LineWidth',LW);ylabel('Positie [m]'); xlabel('t [s]');
+plot(ts,real_x,'g','LineWidth',LW)
+legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
+
+thetatop = theta_hat;
+thetabot = theta_hat;
+thetatop(~t_obs1) = nan;
+thetabot(t_obs1) = nan;
+
+%subplot(2,2,2)
+nexttile
+hold on; 
+plot(ts, thetatop,'r', ts, thetabot, 'b','LineWidth',LW);ylabel('Theta [rad]'); xlabel('t [s]');
+plot(ts,real_theta,'g','LineWidth',LW)
+legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
+
+vtop = v_hat;
+vbot = v_hat;
+vtop(~t_obs1) = nan;
+vbot(t_obs1) = nan;
+
+%subplot(2,2,3)
+nexttile
+hold on; 
+plot(ts, vtop,'r', ts, vbot, 'b','LineWidth',LW); ylabel('Snelheid [m/s]'); xlabel('t [s]');
+plot(ts,real_v,'g','LineWidth',LW)
+legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
+
+theta_dottop = theta_dot_hat;
+theta_dotbot = theta_dot_hat;
+theta_dottop(~t_obs1) = nan;
+theta_dotbot(t_obs1) = nan;
+
+%subplot(2,2,4)
+nexttile
+hold on; 
+plot(ts, theta_dottop,'r', ts, theta_dotbot, 'b','LineWidth',LW); ylabel('Hoeksnelheid [rad/s]'); xlabel('t [s]');
+plot(ts,real_theta_dot,'g','LineWidth',LW)
+legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
+
+tiles.TileSpacing = 'tight';
+tiles.Padding = "tight";
+%exportgraphics(tiles,PATH+"/Plots-Video/StateSpace.png",'Resolution',300)
+%%
+v_est = ( x(2:end)-x(1:end-1) )/Ts;
+theta_dot_est = ( theta(2:end)-theta(1:end-1) )/Ts;
+
+figure;
+tiles = tiledlayout(2,2); 
+nexttile
+hold on;
+plot(ts(2:end), v_hat(2:end),'b','LineWidth',LW);
+ylabel('Snelheid [m/s]'); xlabel('t [s]');
+plot(ts(2:end),real_v(2:end),'g','LineWidth',LW)
+legend('Observer','Werkelijke waarde')
+
+%subplot(2,2,2)
+nexttile
+hold on; 
+plot(ts(2:end), theta_dot_hat(2:end),'b','LineWidth',LW);
+ylabel('Snelheid [rad/s]'); xlabel('t [s]');
+plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',LW)
+legend('Observer','Werkelijke waarde')
+
+%subplot(2,2,3)
+nexttile
+hold on; 
+plot(ts(2:end), v_est,'b','LineWidth',LW); 
+ylabel('Snelheid [m/s]'); xlabel('t [s]');
+plot(ts(2:end),real_v(2:end),'g','LineWidth',LW)
+legend('Derivatieve observer','Werkelijke waarde')
+
+%subplot(2,2,4)
+nexttile
+hold on; 
+plot(ts(2:end), theta_dot_est,'b','LineWidth',LW); 
+ylabel('Hoeksnelheid [rad/s]'); xlabel('t [s]');
+plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',LW)
+legend('Derivatieve observer','Werkelijke waarde')
+
+tiles.TileSpacing = 'tight';
+tiles.Padding = "tight";
+%exportgraphics(tiles,PATH+"/Plots-Video/StateSpace_Derivative.png",'Resolution',300)

@@ -198,7 +198,7 @@ R = 1;
 [Kd,S,e] = dlqr(Sd.A,Sd.B,Q,R)
 %% Simulatie SSF
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
-n_samples = 400;
+n_samples = 100;
 ts = (0:n_samples-1)*Ts;
 mode = STATE_SPACE;
 [~,G1] = zero(Rd1);
