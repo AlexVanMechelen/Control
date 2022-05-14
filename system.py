@@ -58,9 +58,9 @@ def controller(system):
             system.state = system.init_state()
             system.u = 0.0
         if msg == 'close':
-            conn.close()
+            conn.close
             break
-    listener.close()
+    listener.close
 
 def visualizer(graph):
     ani = animation.FuncAnimation(graph.fig, graph.show,

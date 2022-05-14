@@ -108,7 +108,7 @@ def matlab_comms(controller, params):
                     params.system_conn.send('reset')
                 elif mode == 254: # close connection
                     print(f'Closing connection {connection}')
-                    connection.close()
+                    connection.close
                     break
                 elif mode == 255: # get response
                     params.w = read_float(connection)
@@ -136,4 +136,4 @@ def matlab_comms(controller, params):
                         for _ in range(n_params):
                             parameters.append(read_float(connection))
                         controller.set_params(parameters)
-        connection.close()
+        connection.close
