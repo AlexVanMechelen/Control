@@ -79,7 +79,7 @@ clear arduino
 x = Y(1,:); theta = Y(2,:); u = Y(3,:);
 x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
 real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
-
+Yso = Y;
 t_obs1 = find(abs(theta)>pi/3);
 %% Opmaak
 set(groot,'defaulttextinterpreter','latex');
@@ -197,8 +197,6 @@ Q = diag([38,1,10000,0]);
 R = 1;
 [Kd,S,e] = dlqr(Sd.A,Sd.B,Q,R)
 %% Simulatie SSF
-counter = 1;
-omega = 0;
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
 n_samples = 20;
 ts = (0:n_samples-1)*Ts;
@@ -211,12 +209,11 @@ reset_system(arduino);
 Y = get_response(arduino, w, n_samples);
 close_connection(arduino)
 clear arduino
-omega = max(abs(Y(11,:)))
-counter = counter + 1;
 %% Plots
 x = Y(1,:); theta = Y(2,:); u = Y(3,:);
 x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
 real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
+Yssf = Y;
 t_obs1 = find(abs(theta)>pi/3);
 xtop = x_hat;
 xbot = x_hat;
@@ -311,20 +308,20 @@ legend('Derivatieve observer','Werkelijke waarde')
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
 %exportgraphics(tiles,PATH+"/Plots-Video/StateSpace_Derivative.png",'Resolution',300)
-%% ESSF
+%% ESSF Positie
 AE = [Sd.A,zeros(4,1);Sd.C(1,:),[1]];
 BE = [Sd.B zeros(4,1);Sd.D(1) -1];
 CE = [Sd.C, zeros(2,1)];
 DE = [Sd.D; 0];
 BEu0 = BE(:,1);
-Q = diag([38,0,10000,0,10]);
+Q = diag([10,0,10000,0,1]);
 R = 1;
 [KE,SE,eE] = dlqr(AE,BEu0,Q,R)
 Kd = KE(1,1:4);
 Ki = KE(1,5);
-%% Simulatie SSF
+%% Simulatie ESSF Positie
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
-n_samples = 20;
+n_samples = 400;
 ts = (0:n_samples-1)*Ts;
 mode = EXTENDED;
 [~,G1] = zero(Rd1);
@@ -335,3 +332,126 @@ reset_system(arduino);
 Y = get_response(arduino, w, n_samples);
 close_connection(arduino)
 clear arduino
+%% Plots
+x = Y(1,:); theta = Y(2,:); u = Y(3,:);
+x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
+real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
+Yessf = Y;
+t_obs1 = find(abs(theta)>pi/3);
+xtop = x_hat;
+xbot = x_hat;
+xtop(~t_obs1) = nan;
+xbot(t_obs1) = nan;
+
+figure;
+tiles = tiledlayout(2,2);
+%subplot(2,2,1)
+nexttile
+hold on;
+plot(ts, xtop,'r', ts, xbot, 'b','LineWidth',LW);ylabel('Positie [m]'); xlabel('t [s]');
+plot(ts,real_x,'g','LineWidth',LW)
+legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
+
+thetatop = theta_hat;
+thetabot = theta_hat;
+thetatop(~t_obs1) = nan;
+thetabot(t_obs1) = nan;
+
+%subplot(2,2,2)
+nexttile
+hold on; 
+plot(ts, thetatop,'r', ts, thetabot, 'b','LineWidth',LW);ylabel('Theta [rad]'); xlabel('t [s]');
+plot(ts,real_theta,'g','LineWidth',LW)
+legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
+
+vtop = v_hat;
+vbot = v_hat;
+vtop(~t_obs1) = nan;
+vbot(t_obs1) = nan;
+
+%subplot(2,2,3)
+nexttile
+hold on; 
+plot(ts, vtop,'r', ts, vbot, 'b','LineWidth',LW); ylabel('Snelheid [m/s]'); xlabel('t [s]');
+plot(ts,real_v,'g','LineWidth',LW)
+legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
+
+theta_dottop = theta_dot_hat;
+theta_dotbot = theta_dot_hat;
+theta_dottop(~t_obs1) = nan;
+theta_dotbot(t_obs1) = nan;
+
+%subplot(2,2,4)
+nexttile
+hold on; 
+plot(ts, theta_dottop,'r', ts, theta_dotbot, 'b','LineWidth',LW); ylabel('Hoeksnelheid [rad/s]'); xlabel('t [s]');
+plot(ts,real_theta_dot,'g','LineWidth',LW)
+legend('Observer grote hoeken','Observer kleine hoeken','Werkelijke waarde')
+
+tiles.TileSpacing = 'tight';
+tiles.Padding = "tight";
+%exportgraphics(tiles,PATH+"/Plots-Video/ExtendedStateSpace.png",'Resolution',300)
+%%
+v_est = ( x(2:end)-x(1:end-1) )/Ts;
+theta_dot_est = ( theta(2:end)-theta(1:end-1) )/Ts;
+
+figure;
+tiles = tiledlayout(2,2); 
+nexttile
+hold on;
+plot(ts(2:end), v_hat(2:end),'b','LineWidth',LW);
+ylabel('Snelheid [m/s]'); xlabel('t [s]');
+plot(ts(2:end),real_v(2:end),'g','LineWidth',LW)
+legend('Observer','Werkelijke waarde')
+
+%subplot(2,2,2)
+nexttile
+hold on; 
+plot(ts(2:end), theta_dot_hat(2:end),'b','LineWidth',LW);
+ylabel('Snelheid [rad/s]'); xlabel('t [s]');
+plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',LW)
+legend('Observer','Werkelijke waarde')
+
+%subplot(2,2,3)
+nexttile
+hold on; 
+plot(ts(2:end), v_est,'b','LineWidth',LW); 
+ylabel('Snelheid [m/s]'); xlabel('t [s]');
+plot(ts(2:end),real_v(2:end),'g','LineWidth',LW)
+legend('Derivatieve observer','Werkelijke waarde')
+
+%subplot(2,2,4)
+nexttile
+hold on; 
+plot(ts(2:end), theta_dot_est,'b','LineWidth',LW); 
+ylabel('Hoeksnelheid [rad/s]'); xlabel('t [s]');
+plot(ts(2:end),real_theta_dot(2:end),'g','LineWidth',LW)
+legend('Derivatieve observer','Werkelijke waarde')
+
+tiles.TileSpacing = 'tight';
+tiles.Padding = "tight";
+exportgraphics(tiles,PATH+"/Plots-Video/ExtendedStateSpace_Derivative.png",'Resolution',300)
+%% ESSF Positie Hoek
+% AE = [Sd.A,zeros(4,2);Sd.C,diag([1 1])];
+% BE = [Sd.B zeros(4,2);Sd.D diag([-1 -1])];
+% CE = [Sd.C, zeros(2,2)];
+% DE = [Sd.D; zeros(2,1)];
+% BEu0 = BE(:,1);
+% Q = diag([1,0,1,0,1,1]);
+% R = 1;
+% [KE,SE,eE] = dlqr(AE,BEu0,Q,R)
+% Kd = KE(1,1:4);
+% Ki = KE(1,5);
+% %% Simulatie ESSF Positie Hoek
+% arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
+% n_samples = 20;
+% ts = (0:n_samples-1)*Ts;
+% mode = EXTENDED;
+% [~,G1] = zero(Rd1);
+% [~,G2] = zero(Rd2);
+% w = 0;
+% set_mode_params(arduino, mode, w, cat(1,reshape(Kd,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1)));
+% reset_system(arduino);
+% Y = get_response(arduino, w, n_samples);
+% close_connection(arduino)
+% clear arduino

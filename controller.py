@@ -120,9 +120,6 @@ class Controller:
             C1 = np.reshape(parameters[41:49], (2, 4), order='F')
             L2 = np.reshape(parameters[49:57], (4, 2), order='F')
 
-            self.x_hat = np.zeros((4, 1))
-            self.x_hat[2] = np.pi
-
             # Set observer params
             self.observer.set_arrays(L1, A1, B1, C1, L2)
 
@@ -134,23 +131,18 @@ class Controller:
             B1 = np.reshape(parameters[28:32], (1, 4), order='F')
             C1 = np.reshape(parameters[32:40], (2, 4), order='F')
             L2 = np.reshape(parameters[40:48], (4, 2), order='F')
-            self.x_hat = np.zeros((4, 1))
-            self.x_hat[2] = np.pi
             # Set observer params
             self.observer.set_arrays(L1, A1, B1, C1, L2)
 
         elif params.mode == 'EXTENDED':
             self.Kd = parameters[0:4]
             self.Ki = parameters[4]
-
+            self.SE = 0
             L1 = np.reshape(parameters[5:13], (4, 2), order='F')
             A1 = np.reshape(parameters[13:29], (4, 4), order='F')
             B1 = np.reshape(parameters[29:33], (1, 4), order='F')
             C1 = np.reshape(parameters[33:41], (2, 4), order='F')
             L2 = np.reshape(parameters[41:49], (4, 2), order='F')
-            self.x_hat = np.zeros((4, 1))
-            self.x_hat[2] = np.pi
-            self.SE = 0
             # Set observer params
             self.observer.set_arrays(L1, A1, B1, C1, L2)
 
@@ -265,7 +257,6 @@ class Controller:
             if abs(u) > 10:
                 u = np.sign(u)*10
             self.x_hat = self.observer(u, y, self.x_hat)
-            self.u1_prev1 = u
             out = list(y) + [u] + list(np.concatenate(self.x_hat))
 
         elif params.mode == 'EXTENDED':
