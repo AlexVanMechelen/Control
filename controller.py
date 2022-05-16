@@ -35,11 +35,14 @@ class Controller:
         self.p22    = 0.0
 
         self.x_hat = np.zeros((4, 1))
+        self.x_hat[2] = np.pi
         self.observer = Observer()
 
         self.angle_factor = 11 / 10
 
         self.Kd = np.zeros((1, 4))
+        self.Ki = 0
+        self.SE = 0
 
     
     def set_params(self, parameters):
@@ -124,7 +127,6 @@ class Controller:
             self.observer.set_arrays(L1, A1, B1, C1, L2)
 
         elif params.mode == "STATE_SPACE":
-            self.u1_prev1 = 0.0
             self.Kd = parameters[0:4]
 
             L1 = np.reshape(parameters[4:12], (4, 2), order='F')
@@ -132,12 +134,25 @@ class Controller:
             B1 = np.reshape(parameters[28:32], (1, 4), order='F')
             C1 = np.reshape(parameters[32:40], (2, 4), order='F')
             L2 = np.reshape(parameters[40:48], (4, 2), order='F')
-
+            self.x_hat = np.zeros((4, 1))
+            self.x_hat[2] = np.pi
             # Set observer params
             self.observer.set_arrays(L1, A1, B1, C1, L2)
 
         elif params.mode == 'EXTENDED':
-            pass
+            self.Kd = parameters[0:4]
+            self.Ki = parameters[4]
+
+            L1 = np.reshape(parameters[5:13], (4, 2), order='F')
+            A1 = np.reshape(parameters[13:29], (4, 4), order='F')
+            B1 = np.reshape(parameters[29:33], (1, 4), order='F')
+            C1 = np.reshape(parameters[33:41], (2, 4), order='F')
+            L2 = np.reshape(parameters[41:49], (4, 2), order='F')
+            self.x_hat = np.zeros((4, 1))
+            self.x_hat[2] = np.pi
+            self.SE = 0
+            # Set observer params
+            self.observer.set_arrays(L1, A1, B1, C1, L2)
 
 
     def __call__(self, y):
@@ -245,7 +260,7 @@ class Controller:
             out = list(y) + [u] + list(np.concatenate(self.x_hat))
 
         elif params.mode == 'STATE_SPACE':
-            y[0] = y[0] - params.w
+            y[0] -= params.w
             u = -np.matmul(self.Kd, self.x_hat)
             if abs(u) > 10:
                 u = np.sign(u)*10
@@ -254,7 +269,13 @@ class Controller:
             out = list(y) + [u] + list(np.concatenate(self.x_hat))
 
         elif params.mode == 'EXTENDED':
-            pass
+            self.SE += self.x_hat[0] - params.w
+            u = -np.matmul(self.Kd,self.x_hat) - self.Ki*self.SE
+            if abs(u) > 10:
+                u = np.sign(u)*10
+            self.SE = -(u+np.matmul(self.Kd,self.x_hat))/self.Ki
+            self.x_hat = self.observer(u, y, self.x_hat)
+            out = list(y) + [u] + list(np.concatenate(self.x_hat))
         else:
             u = 0.0
         #print(f"y = {y:5.3f}, e = {e:5.3f}, u = {u:5.3f}")

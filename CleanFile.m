@@ -193,22 +193,26 @@ tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
 %%exportgraphics(tiles,PATH+"/Plots-Video/Observer_Derivative.png",'Resolution',300)
 %% State Space Feedback
-Q = diag([38,0,10000,0]);
+Q = diag([38,1,10000,0]);
 R = 1;
 [Kd,S,e] = dlqr(Sd.A,Sd.B,Q,R)
 %% Simulatie SSF
+counter = 1;
+omega = 0;
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
-n_samples = 100;
+n_samples = 20;
 ts = (0:n_samples-1)*Ts;
 mode = STATE_SPACE;
 [~,G1] = zero(Rd1);
 [~,G2] = zero(Rd2);
-w = 0;
+w = 2;
 set_mode_params(arduino, mode, w, cat(1,reshape(Kd,[],1),reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1)));
 reset_system(arduino);
 Y = get_response(arduino, w, n_samples);
 close_connection(arduino)
 clear arduino
+omega = max(abs(Y(11,:)))
+counter = counter + 1;
 %% Plots
 x = Y(1,:); theta = Y(2,:); u = Y(3,:);
 x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
@@ -307,3 +311,27 @@ legend('Derivatieve observer','Werkelijke waarde')
 tiles.TileSpacing = 'tight';
 tiles.Padding = "tight";
 %exportgraphics(tiles,PATH+"/Plots-Video/StateSpace_Derivative.png",'Resolution',300)
+%% ESSF
+AE = [Sd.A,zeros(4,1);Sd.C(1,:),[1]];
+BE = [Sd.B zeros(4,1);Sd.D(1) -1];
+CE = [Sd.C, zeros(2,1)];
+DE = [Sd.D; 0];
+BEu0 = BE(:,1);
+Q = diag([38,0,10000,0,10]);
+R = 1;
+[KE,SE,eE] = dlqr(AE,BEu0,Q,R)
+Kd = KE(1,1:4);
+Ki = KE(1,5);
+%% Simulatie SSF
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
+n_samples = 20;
+ts = (0:n_samples-1)*Ts;
+mode = EXTENDED;
+[~,G1] = zero(Rd1);
+[~,G2] = zero(Rd2);
+w = 0;
+set_mode_params(arduino, mode, w, cat(1,reshape(Kd,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1)));
+reset_system(arduino);
+Y = get_response(arduino, w, n_samples);
+close_connection(arduino)
+clear arduino
