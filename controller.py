@@ -41,7 +41,7 @@ class Controller:
         self.angle_factor = 11 / 10
 
         self.Kd = np.zeros((1, 4))
-        self.Ki = 0
+        self.Ki = 1
         self.SE = 0
 
     
