@@ -80,9 +80,9 @@ plot(t,y(:,2),'HandleVisibility','off')
 plot(nan,nan,'.')
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
-title('\textbf{Respons open lus}','FontSize',45)
+title('\textbf{Respons in open lus}','FontSize',45)
 legend('Positie x','Hoek $\theta$')
-exportgraphics(F,PATH+"/Plots-Video/ResponsOpenLus.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/ResponsOpenLus.png",'Resolution',300)
 %% Hoekcontroller
 ps2 = pole(Sdtf(2));
 zs2 = zero(Sdtf(2));
@@ -91,21 +91,7 @@ Rd2 = zpk([ps2(2:end)],[0,1.04],48.1,Ts);
 t = 0:Ts:5;
 [y] = impulse(feedback(Rd2*Sd,[0 1]),t);
 F = figure;
-hold on
-colororder({'r','b'})
-yyaxis left
-plot(t,y(:,1),'HandleVisibility','off')
-plot(nan,nan,'.')
-ylabel('Positie [m]')
-yyaxis right
-plot(t,y(:,2),'HandleVisibility','off')
-plot(nan,nan,'.')
-ylim([-5 15])
-ylabel('Hoek [rad]')
-xlabel('Tijd [s]')
-title('\textbf{Impuls gesloten lus met $R_{theta}$}','FontSize',45)
-legend('Positie x','Hoek $\theta$')
-exportgraphics(F,PATH+"/Plots-Video/ResponsGeslotenLusR2.png",'Resolution',300)
+plot(t,y)
 %% Positiecontroller
 ps1 = pole(Sdtf(1));
 zs1 = zero(Sdtf(1));
