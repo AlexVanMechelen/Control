@@ -82,8 +82,8 @@ plot(nan,nan,'w')
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{Respons open lus}','FontSize',45)
-legend('Positie x','Hoek $\theta$',"x$_0$ = 0"+newline+"v$_0$ = 0"+newline+"$\theta_0$ = $\pi$"+newline+"$\omega_0$ = 0")
-exportgraphics(F,PATH+"/Plots-Video/ResponsOpenLus.png",'Resolution',300)
+legend('Positie x','Hoek $\theta$',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
+%exportgraphics(F,PATH+"/Plots-Video/ResponsOpenLus.png",'Resolution',300)
 %% Hoekcontroller
 ps2 = pole(Sdtf(2));
 zs2 = zero(Sdtf(2));
@@ -99,7 +99,7 @@ plot(nan,nan,'w.')
 ylabel('Kracht [N]')
 xlabel('Tijd [s]')
 title('\textbf{Impulsrespons open lus met $R_{theta}$}','FontSize',45)
-legend("$F_0$ = 0 N")
+legend("$F_0 = 0\ N$")
 %exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsOpenLusR2.png",'Resolution',300)
 %% Plot Hoekcontroller gesloten
 t = 0:Ts:5;
@@ -119,8 +119,8 @@ ylim([-5 15])
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{Impuls gesloten lus met $R_{theta}$}','FontSize',45)
-legend('Positie x','Hoek $\theta$',newline+"x$_0$ = 0 m"+newline+"v$_0$ = 0 m/s"+newline+"$\theta_0$ = 0°"+newline+"$\omega_0$ = 0°")
-%exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsGeslotenLusR2.png",'Resolution',300)
+legend('Positie x','Hoek $\theta$',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
+exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsGeslotenLusR2.png",'Resolution',300)
 %% Positiecontroller
 ps1 = pole(Sdtf(1));
 zs1 = zero(Sdtf(1));
@@ -137,7 +137,27 @@ ylabel('Kracht [N]')
 xlabel('Tijd [s]')
 title('\textbf{Impulsrespons open lus met $R_{x}$}','FontSize',45)
 legend("$F_0$ = 0 N")
-exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsOpenLusR1.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsOpenLusR1.png",'Resolution',300)
+%% Plot Positiecontroller gesloten
+t = 0:Ts:6;
+[y] = impulse(feedback(Rd1*Sd,[1 0]),t);
+F = figure;
+hold on
+colororder({'b','r'})
+yyaxis left
+plot(t,y(:,1),'HandleVisibility','off')
+plot(nan,nan,'.')
+ylabel('Positie [m]')
+yyaxis right
+plot(t,y(:,2),'HandleVisibility','off')
+plot(nan,nan,'.')
+plot(nan,nan,'w')
+ylim([-5 15])
+ylabel('Hoek [rad]')
+xlabel('Tijd [s]')
+title('\textbf{Impuls gesloten lus met $R_{x}$}','FontSize',45)
+legend('Positie x','Hoek $\theta$',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
+exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsGeslotenLusR2.png",'Resolution',300)
 %% State Observer
 ps_d1 = [0,0,0.01,0.01];
 L1 = place(Sd.A', Sd.C', ps_d1);
