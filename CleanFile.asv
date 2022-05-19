@@ -64,34 +64,61 @@ end
 Ts = 0.05;
 Sd = c2d(S,Ts);
 Sdtf = tf(Sd);
-%% Plot Open Systeem
+%% Plot Systeem open
 t = 0:Ts:1;
-[y] = lsim(Sd,ones(1,length(t)),t,[0 0 pi 0]);
+[y] = lsim(Sd,zeros(1,length(t)),t,[0 0 pi 0]);
 F = figure;
 hold on
-colororder({'r','b'})
+colororder({'b','r'})
 yyaxis left
 plot(t,y(:,1),'HandleVisibility','off')
-plot(nan,nan,'.')
+plot(nan,nan,'b.')
 ylim([0 50])
 ylabel('Positie [m]')
 yyaxis right
 plot(t,y(:,2),'HandleVisibility','off')
-plot(nan,nan,'.')
+plot(nan,nan,'r.')
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
-title('\textbf{Respons in open lus}','FontSize',45)
+title('\textbf{Respons open lus}','FontSize',45)
 legend('Positie x','Hoek $\theta$')
-%exportgraphics(F,PATH+"/Plots-Video/ResponsOpenLus.png",'Resolution',300)
+exportgraphics(F,PATH+"/Plots-Video/ResponsOpenLus.png",'Resolution',300)
 %% Hoekcontroller
 ps2 = pole(Sdtf(2));
 zs2 = zero(Sdtf(2));
 Rd2 = zpk([ps2(2:end)],[0,1.04],48.1,Ts);
-%% Plot Hoekcontroller
+%% Plot Hoekcontroller open
+t = 0:Ts:5;
+[y] = impulse(Rd2,t);
+F = figure;
+hold on
+colororder({'b','r'})
+plot(t,y(:,1),'HandleVisibility','off')
+plot(nan,nan,'w.')
+ylabel('Kracht [N]')
+xlabel('Tijd [s]')
+title('\textbf{Impulsrespons open lus met $R_{theta}$}','FontSize',45)
+legend("x$_0$: 0"+newline+"v$_0$: 0"+newline+"$\theta_0$: 0"+newline+"$\omega$: 0")
+exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsOpenLusR2.png",'Resolution',300)
+%% Plot Hoekcontroller gesloten
 t = 0:Ts:5;
 [y] = impulse(feedback(Rd2*Sd,[0 1]),t);
 F = figure;
-plot(t,y)
+hold on
+colororder({'b','r'})
+yyaxis left
+plot(t,y(:,1),'HandleVisibility','off')
+plot(nan,nan,'.')
+ylabel('Positie [m]')
+yyaxis right
+plot(t,y(:,2),'HandleVisibility','off')
+plot(nan,nan,'.')
+ylim([-5 15])
+ylabel('Hoek [rad]')
+xlabel('Tijd [s]')
+title('\textbf{Impuls gesloten lus met $R_{theta}$}','FontSize',45)
+legend('Positie x','Hoek $\theta$')
+exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsGeslotenLusR2.png",'Resolution',300)
 %% Positiecontroller
 ps1 = pole(Sdtf(1));
 zs1 = zero(Sdtf(1));
