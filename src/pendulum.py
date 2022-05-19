@@ -26,7 +26,7 @@ class Pendulum(System):
         self.add_noise = add_noise
     
     def init_state(self):
-        return np.array([0.0, 0.0, np.pi, 0.0]) # x0, v0, phi0, omega0
+        return np.array([1, 0.0, 0.0, 0.0]) # x0, v0, phi0, omega0
     
     def get_measurement(self):
         measurement = [self.state[0], self.state[2]]
