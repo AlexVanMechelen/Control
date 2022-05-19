@@ -120,7 +120,7 @@ ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{Impuls gesloten lus met $R_{theta}$}','FontSize',45)
 legend('Positie x','Hoek $\theta$',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
-exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsGeslotenLusR2.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsGeslotenLusR2.png",'Resolution',300)
 %% Positiecontroller
 ps1 = pole(Sdtf(1));
 zs1 = zero(Sdtf(1));
@@ -157,7 +157,7 @@ ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{Impuls gesloten lus met $R_{x}$}','FontSize',45)
 legend('Positie x','Hoek $\theta$',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
-exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsGeslotenLusR2.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsGeslotenLusR2.png",'Resolution',300)
 %% State Observer
 ps_d1 = [0,0,0.01,0.01];
 L1 = place(Sd.A', Sd.C', ps_d1);
