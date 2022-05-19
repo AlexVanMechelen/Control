@@ -64,35 +64,49 @@ end
 Ts = 0.05;
 Sd = c2d(S,Ts);
 Sdtf = tf(Sd);
-%% Plot Open Systeem
+%% Plot Systeem open
 t = 0:Ts:1;
-[y] = lsim(Sd,ones(1,length(t)),t,[0 0 pi 0]);
+[y] = lsim(Sd,zeros(1,length(t)),t,[0 0 pi 0]);
 F = figure;
 hold on
-colororder({'r','b'})
+colororder({'b','r'})
 yyaxis left
 plot(t,y(:,1),'HandleVisibility','off')
-plot(nan,nan,'.')
+plot(nan,nan,'b.')
 ylim([0 50])
 ylabel('Positie [m]')
 yyaxis right
 plot(t,y(:,2),'HandleVisibility','off')
-plot(nan,nan,'.')
+plot(nan,nan,'r.')
+plot(nan,nan,'w')
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{Respons open lus}','FontSize',45)
-legend('Positie x','Hoek $\theta$')
+legend('Positie x','Hoek $\theta$',"x$_0$ = 0"+newline+"v$_0$ = 0"+newline+"$\theta_0$ = $\pi$"+newline+"$\omega_0$ = 0")
 exportgraphics(F,PATH+"/Plots-Video/ResponsOpenLus.png",'Resolution',300)
 %% Hoekcontroller
 ps2 = pole(Sdtf(2));
 zs2 = zero(Sdtf(2));
 Rd2 = zpk([ps2(2:end)],[0,1.04],48.1,Ts);
-%% Plot Hoekcontroller
+%% Plot Hoekcontroller open
+t = 0:Ts:5;
+[y] = impulse(Rd2,t);
+F = figure;
+hold on
+colororder({'b','r'})
+plot(t,y(:,1),'HandleVisibility','off')
+plot(nan,nan,'w.')
+ylabel('Kracht [N]')
+xlabel('Tijd [s]')
+title('\textbf{Impulsrespons open lus met $R_{theta}$}','FontSize',45)
+legend("$F_0$ = 0 N")
+%exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsOpenLusR2.png",'Resolution',300)
+%% Plot Hoekcontroller gesloten
 t = 0:Ts:5;
 [y] = impulse(feedback(Rd2*Sd,[0 1]),t);
 F = figure;
 hold on
-colororder({'r','b'})
+colororder({'b','r'})
 yyaxis left
 plot(t,y(:,1),'HandleVisibility','off')
 plot(nan,nan,'.')
@@ -100,16 +114,30 @@ ylabel('Positie [m]')
 yyaxis right
 plot(t,y(:,2),'HandleVisibility','off')
 plot(nan,nan,'.')
+plot(nan,nan,'w')
 ylim([-5 15])
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{Impuls gesloten lus met $R_{theta}$}','FontSize',45)
-legend('Positie x','Hoek $\theta$')
-exportgraphics(F,PATH+"/Plots-Video/ResponsGeslotenLusR2.png",'Resolution',300)
+legend('Positie x','Hoek $\theta$',newline+"x$_0$ = 0 m"+newline+"v$_0$ = 0 m/s"+newline+"$\theta_0$ = 0°"+newline+"$\omega_0$ = 0°")
+%exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsGeslotenLusR2.png",'Resolution',300)
 %% Positiecontroller
 ps1 = pole(Sdtf(1));
 zs1 = zero(Sdtf(1));
 Rd1 = zpk([ps1(1),1.3,ps1(3)],[0.2,0.75,zs1(3),0.07],2.06,Ts);
+%% Plot Positiecontroller open
+t = 0:Ts:5;
+[y] = impulse(Rd1,t);
+F = figure;
+hold on
+colororder({'b','r'})
+plot(t,y(:,1),'HandleVisibility','off')
+plot(nan,nan,'w.')
+ylabel('Kracht [N]')
+xlabel('Tijd [s]')
+title('\textbf{Impulsrespons open lus met $R_{x}$}','FontSize',45)
+legend("$F_0$ = 0 N")
+exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsOpenLusR1.png",'Resolution',300)
 %% State Observer
 ps_d1 = [0,0,0.01,0.01];
 L1 = place(Sd.A', Sd.C', ps_d1);
