@@ -36,7 +36,7 @@ OBSERVER_TEST = 3;STATE_SPACE = 4;EXTENDED    = 5;
 Ts = 0.05;Sd = c2d(S,Ts);Sdtf = tf(Sd);
 %% Plot Systeem open
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
-n_samples = 5o/0.05+1;ts = (0:n_samples-1)*Ts;
+n_samples = 5/0.05+1;ts = (0:n_samples-1)*Ts;
 mode = OPEN_LOOP;
 w = 1;
 set_mode_params(arduino, mode, w, [])
