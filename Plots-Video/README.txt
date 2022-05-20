@@ -29,9 +29,9 @@ Space Feedback met PI net iets sneller dan deze met slechts een I.
 Dit is aangezien de integrator slechts vanaf de tweede tijdstap kan reageren
 op de aangelegde stap.
 
-----------
+-------------------------------------------------
 ESSF/ESSF[I/PI]_Python_sim_vs_lsim__Pos_[0/1].png
-----------
+-------------------------------------------------
 Alle figuren van dit type zijn vergelijkingen tussen een simulatie in
 Matlab via het lsim commando en een simulatie met de niet-lineaire
 implementatie in Pyhton. Elke simulatie werd uitgevoerd met een initiële
