@@ -107,9 +107,9 @@ ylabel('Hoek [rad]')
 set(gca,'YTick',-2*pi:pi/2:2*pi)
 set(gca,'YTickLabel',{'$-2\pi$','$-3\pi$/2','$-\pi$','$-\pi$/2','0','$\pi$/2','$\pi$','3$\pi$/2','2$\pi$'})
 xlabel('Tijd [s]')
-title('\textbf{Impulsrespons open lus}','FontSize',45)
+title('\textbf{Staprespons open lus}','FontSize',45)
 legend('Simulatie','Meting',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','southwest')
-%exportgraphics(F,PATH+"/Plots-Video/PID/ResponsOpenLus.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/PID/StapResponsOpenLus.png",'Resolution',300)
 %% Hoekcontroller
 ps2 = pole(Sdtf(2));
 zs2 = zero(Sdtf(2));
