@@ -189,12 +189,11 @@ class Controller:
             B4 = self.z11*self.z12*self.z13
 
             u1 = -A4*self.u1_prev4+A3*self.u1_prev3-A2*self.u1_prev2+A1*self.u1_prev1+self.k1*(B1*self.e1_prev1-B2*self.e1_prev2+B3*self.e1_prev3-B4*self.e1_prev4)
-            #u2 = self.k2 * (e2 - (self.z21+self.z22)*self.e2_prev1 + self.z21*self.z22*self.e2_prev2) + (self.p21+self.p22)*self.u2_prev1 - self.p21*self.p22*self.u2_prev2
-            u2 = 0
+            u2 = self.k2 * (e2 - (self.z21+self.z22)*self.e2_prev1 + self.z21*self.z22*self.e2_prev2) + (self.p21+self.p22)*self.u2_prev1 - self.p21*self.p22*self.u2_prev2
             u = u1 + u2
 
             if abs(u) > 10:
-                u1 = np.sign(u) * 10 * u1 / (u1 + u2)# * self.angle_factor
+                u1 = np.sign(u) * 10 * u1 / (u1 + u2) * self.angle_factor
                 u2 = np.sign(u) * 10 * u2 / (u1 + u2) * (1-self.angle_factor)
                 u = u1 + u2
 
