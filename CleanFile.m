@@ -109,7 +109,7 @@ set(gca,'YTickLabel',{'$-2\pi$','$-3\pi$/2','$-\pi$','$-\pi$/2','0','$\pi$/2','$
 xlabel('Tijd [s]')
 title('\textbf{Impulsrespons open lus}','FontSize',45)
 legend('Simulatie','Meting',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','southwest')
-%exportgraphics(F,PATH+"/Plots-Video/ResponsOpenLus.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/PID/ResponsOpenLus.png",'Resolution',300)
 %% Hoekcontroller
 ps2 = pole(Sdtf(2));
 zs2 = zero(Sdtf(2));
@@ -147,7 +147,7 @@ ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{Impulsrespons gesloten lus met $R_{theta}$}','FontSize',45)
 legend('Simulatie',"Meting",newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0.1\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Orientation','horizontal')
-%exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsGeslotenLusR2.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/PID/ImpulsResponsGeslotenLusR2.png",'Resolution',300)
 %% Positiecontroller
 ps1 = pole(Sdtf(1));
 zs1 = zero(Sdtf(1));
@@ -189,7 +189,7 @@ ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{Impulsrespons gesloten lus met $R_{x}$}','FontSize',45)
 legend('Simulatie','Meting',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','south','Orientation','horizontal')
-%exportgraphics(F,PATH+"/Plots-Video/StapresponsGeslotenLusR1.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/PID/StapresponsGeslotenLusR1.png",'Resolution',300)
 %% State Observer
 ps_d1 = [0,0,0.01,0.01];
 L1 = place(Sd.A', Sd.C', ps_d1);
@@ -241,7 +241,7 @@ ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{$Observer_{snel}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
-exportgraphics(F,PATH+"/Plots-Video/ObeserverSnel.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverSnel.png",'Resolution',300)
 %% Simulatie State Observer
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
 n_samples = 30/0.05+1;
@@ -260,7 +260,7 @@ x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
 real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
 u = [Y(3,:);x;theta];
 %% Plot State Observer
-[y] = lsim(observer1,u,ts,[0 0 pi 0]);
+[y] = lsim(observer2,u,ts,[0 0 pi 0]);
 F = figure;
 hold on
 colororder({'b','r'})
@@ -282,9 +282,147 @@ set(gca,'YTick',-2*pi:pi:2*pi)
 set(gca,'YTickLabel',{'$-2\pi$','$-\pi$','0','$\pi$','2$\pi$'})
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
-title('\textbf{$Observer_{snel}$}','FontSize',45)
+title('\textbf{$Observer_{traag}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
-%exportgraphics(F,PATH+"/Plots-Video/StapresponsGeslotenLusR1.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverTraag.png",'Resolution',300)
+%% Simulatie gecombineerde observer
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
+n_samples = 30/0.05+1;
+ts = (0:n_samples-1)*Ts;
+mode = OBSERVER_TEST;
+[~,G1] = zero(Rd1);
+[~,G2] = zero(Rd2);
+w = 0;
+set_mode_params(arduino, mode, w, cat(1, G1,cat(1,zero(Rd1),pole(Rd1)),G2, cat(1, zero(Rd2), pole(Rd2)),reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1)));
+reset_system(arduino);
+Y = get_response(arduino, w, n_samples);
+close_connection(arduino)
+clear arduino
+x = Y(1,:); theta = Y(2,:); u = Y(3,:);
+x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
+real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
+u = [Y(3,:);x;theta];
+%% Plot State Observer positie
+[y1] = lsim(observer1,u,ts,[0 0 pi 0]);
+[y2] = lsim(observer2,u,ts,[0 0 pi 0]);
+for i = 1:length(ts)
+    if abs(theta(i)) > pi/3
+        y(i,:) = y1(i,:);
+    else
+        y(i,:) = y2(i,:);
+    end
+end
+F = figure;
+hold on
+colororder({'b','r'})
+yyaxis left
+plot(ts,y(:,1),'b-','HandleVisibility','off')
+plot(ts,x_hat,'b--','HandleVisibility','off')
+plot(ts,real_x,'k:','HandleVisibility','off')
+ylabel('Positie [m]')
+yyaxis right
+plot(ts,y(:,3),'r-','HandleVisibility','off')
+plot(ts,theta_hat,'r--','HandleVisibility','off')
+plot(ts,real_theta,'k:','HandleVisibility','off')
+plot(nan,nan,'k-')
+plot(nan,nan,'k--')
+plot(nan,nan,'k:')
+plot(nan,nan,'w')
+plot(nan,nan,'w')
+set(gca,'YTick',-3*pi:pi:3*pi)
+set(gca,'YTickLabel',{'$-3\pi$','$-2\pi$','$-\pi$','0','$\pi$','2$\pi$','$3\pi$'})
+ylabel('Hoek [rad]')
+xlabel('Tijd [s]')
+title('\textbf{$Observer_{traag}$}','FontSize',45)
+legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombPA.png",'Resolution',300)
+%%
+F = figure;
+hold on
+colororder({'b','r'})
+plot(ts,y(:,1),'b-','HandleVisibility','off')
+plot(ts,x_hat,'r-','HandleVisibility','off','LineWidth',1)
+plot(ts,real_x,'k:','HandleVisibility','off')
+plot(nan,nan,'b-')
+plot(nan,nan,'r')
+plot(nan,nan,'k:')
+plot(nan,nan,'w')
+ylabel('Positie [m]')
+xlabel('Tijd [s]')
+title('\textbf{$Observer_{traag}$}','FontSize',45)
+legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombP.png",'Resolution',300)
+%%
+F = figure;
+hold on
+colororder({'b','r'})
+plot(ts,y(:,3),'b-','HandleVisibility','off')
+plot(ts,theta_hat,'r-','HandleVisibility','off','LineWidth',1)
+plot(ts,real_theta,'k:','HandleVisibility','off')
+plot(nan,nan,'b-')
+plot(nan,nan,'r-')
+plot(nan,nan,'k:')
+plot(nan,nan,'w')
+ylabel('Hoek [rad]')
+xlabel('Tijd [s]')
+title('\textbf{$Observer_{traag}$}','FontSize',45)
+legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombA.png",'Resolution',300)
+%% Plot State Observer snelheid
+F = figure;
+hold on
+colororder({'b','r'})
+yyaxis left
+plot(ts,y(:,2),'b-','HandleVisibility','off')
+plot(ts,v_hat,'b--','HandleVisibility','off')
+plot(ts,real_v,'k:','HandleVisibility','off')
+ylabel('Snelheid [m/s]')
+yyaxis right
+plot(ts,y(:,4),'r-','HandleVisibility','off')
+plot(ts,theta_dot_hat,'r--','HandleVisibility','off')
+plot(ts,real_theta_dot,'k:','HandleVisibility','off')
+plot(nan,nan,'k-')
+plot(nan,nan,'k--')
+plot(nan,nan,'k:')
+plot(nan,nan,'w')
+plot(nan,nan,'w')
+ylabel('Hoeksnelheid [rad/s]')
+xlabel('Tijd [s]')
+title('\textbf{$Observer_{traag}$}','FontSize',45)
+legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombVR.png",'Resolution',300)
+%%
+F = figure;
+hold on
+colororder({'b','r'})
+plot(ts,y(:,2),'b-','HandleVisibility','off')
+plot(ts,v_hat,'r-','HandleVisibility','off','LineWidth',1)
+plot(ts,real_v,'k:','HandleVisibility','off')
+plot(nan,nan,'b-')
+plot(nan,nan,'r')
+plot(nan,nan,'k:')
+plot(nan,nan,'w')
+ylabel('Snelheid [m/s]')
+xlabel('Tijd [s]')
+title('\textbf{$Observer_{traag}$}','FontSize',45)
+legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombV.png",'Resolution',300)
+%%
+F = figure;
+hold on
+colororder({'b','r'})
+plot(ts,y(:,4),'b-','HandleVisibility','off')
+plot(ts,theta_dot_hat,'r-','HandleVisibility','off','LineWidth',1)
+plot(ts,real_theta_dot,'k:','HandleVisibility','off')
+plot(nan,nan,'b-')
+plot(nan,nan,'r-')
+plot(nan,nan,'k:')
+plot(nan,nan,'w')
+ylabel('Hoeksnelheid [rad/s]')
+xlabel('Tijd [s]')
+title('\textbf{$Observer_{traag}$}','FontSize',45)
+legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombR.png",'Resolution',300)
 
 
 
