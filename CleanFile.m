@@ -187,7 +187,7 @@ set(gca,'YTickLabel',{'$-2\pi$','$-3\pi$/2','$-\pi$','$-\pi$/2','0','$\pi$/2','$
 ylim([-3*pi/2 3*pi/2])
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
-title('\textbf{Impulsrespons gesloten lus met $R_{x}$}','FontSize',45)
+title('\textbf{Staprespons gesloten lus met $R_{x}$}','FontSize',45)
 legend('Simulatie','Meting',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','south','Orientation','horizontal')
 %exportgraphics(F,PATH+"/Plots-Video/PID/StapresponsGeslotenLusR1.png",'Resolution',300)
 %% State Observer
