@@ -1015,5 +1015,5 @@ F = figure;
 set(get(AX(1),'Ylabel'),'String','Positie [m]')
 set(get(AX(2),'Ylabel'),'String','Hoek [rad]')
 title('Non-linear vs linear');
-legend('Positie lsim','Positie pysim','Hoek lsim','Hoek pysim','Location','Northeast');
+legend('Positie lsim','Positie pysim','Hoek lsim','Hoek pysim','Location','best');
 %exportgraphics(F,PATH+"/Plots-Video/ESSF/Python_sim_vs_lsim__Pos_1.png",'Resolution',300)
