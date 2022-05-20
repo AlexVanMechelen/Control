@@ -1016,4 +1016,32 @@ set(get(AX(1),'Ylabel'),'String','Positie [m]')
 set(get(AX(2),'Ylabel'),'String','Hoek [rad]')
 title('Non-linear vs linear');
 legend('Positie lsim','Positie pysim','Hoek lsim','Hoek pysim','Location','Northeast');
-%exportgraphics(F,PATH+"/Plots-Video/ESSF/Python_sim_vs_lsim__Pos_1.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/ESSF/ESSFI_Python_sim_vs_lsim__Pos_1.png",'Resolution',300)
+%% ESSF PI  
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
+n_samples = 240;
+ts = (0:n_samples-1)*Ts;
+mode = EXTENDED;
+[~,G1] = zero(Rd1);
+[~,G2] = zero(Rd2);
+w = 0;
+set_mode_params(arduino, mode, w, cat(1,reshape(Kd,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1),Kp));
+reset_system(arduino);
+Y = get_response(arduino, w, n_samples);
+close_connection(arduino)
+clear arduino
+
+x = Y(1,:); theta = Y(2,:); u = Y(3,:);
+x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
+real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
+
+r = [w*ones(size(ts))];
+[y_EI,t_EI,x]=lsim(sysE_cl,r,ts,[0 0 0.1 0 0]);
+
+F = figure;
+[AX,H1,H2] = plotyy([t_EI,ts'],[y_EI(:,1),real_x'],[t_EI,ts'],[y_EI(:,2),real_theta'],'plot');
+set(get(AX(1),'Ylabel'),'String','Positie [m]')
+set(get(AX(2),'Ylabel'),'String','Hoek [rad]')
+title('Non-linear vs linear');
+legend('Positie lsim','Positie pysim','Hoek lsim','Hoek pysim','Location','Northeast');
+%exportgraphics(F,PATH+"/Plots-Video/ESSF/ESSFPI_Python_sim_vs_lsim__Pos_1.png",'Resolution',300)
