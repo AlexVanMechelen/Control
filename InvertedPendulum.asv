@@ -1,8 +1,9 @@
-clearvars; clc; close all
+clearvars; clc;
 PATH = pwd;
 addpath("matlab_tools")
 get(0,'ScreenSize');
 set(groot,'defaultFigurePosition',[ans(3)/2 0 ans(3)/2 ans(4)])
+pause(5)
 %% Startup Python
 if ispc % Check for Windows OS
     system('closeSessions.bat');
@@ -36,7 +37,7 @@ OBSERVER_TEST = 3;STATE_SPACE = 4;EXTENDED    = 5;
 Ts = 0.05;Sd = c2d(S,Ts);Sdtf = tf(Sd);
 %% Plot Systeem open
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
-n_samples = 5o/0.05+1;ts = (0:n_samples-1)*Ts;
+n_samples = 5/0.05+1;ts = (0:n_samples-1)*Ts;
 mode = OPEN_LOOP;
 w = 1;
 set_mode_params(arduino, mode, w, [])
@@ -55,7 +56,7 @@ ps2 = pole(Sdtf(2));zs2 = zero(Sdtf(2));
 Rd2 = zpk([ps2(2:end)],[0,1.04],48.1,Ts);
 %% Plot Hoekcontroller gesloten
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
-n_samples = 5/0.05+1;ts = (0:n_samples-1)*Ts;
+n_samples = 1/0.05+1;ts = (0:n_samples-1)*Ts;
 mode = CLASSICAL_ANG;
 w = 0.0;
 [~,G2] = zero(Rd2);
@@ -66,6 +67,7 @@ Y = get_response(arduino, w, n_samples);
 x = Y(1,:); theta = Y(2,:);
 close_connection(arduino)
 clear arduino
+%%
 figure(1);
 t = tiledlayout(1,2);
 nexttile;plot(ts,x);title("Positie")
