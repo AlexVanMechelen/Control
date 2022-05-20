@@ -43,6 +43,7 @@ class Controller:
         self.Kd = np.zeros((1, 4))
         self.Ki = 1
         self.SE = 0
+        self.Kp = 0
 
     
     def set_params(self, parameters):
@@ -146,6 +147,7 @@ class Controller:
             # Set observer params
             self.observer.set_arrays(L1, A1, B1, C1, L2)
 
+            self.Kp = parameters[49]  # Keep 0 for ESSF I, change to Kp for ESSF PI
 
     def __call__(self, y):
         """Call controller with measurement y
@@ -260,8 +262,9 @@ class Controller:
             out = list(y) + [u] + list(np.concatenate(self.x_hat))
 
         elif params.mode == 'EXTENDED':
-            self.SE += self.x_hat[0] - params.w
-            u = -np.matmul(self.Kd,self.x_hat) - self.Ki*self.SE
+            current_err = self.x_hat[0] - params.w
+            self.SE += current_err
+            u = -np.matmul(self.Kd,self.x_hat) - self.Ki*self.SE + self.Kp*current_err
             if abs(u) > 10:
                 u = np.sign(u)*10
             self.SE = -(u+np.matmul(self.Kd,self.x_hat))/self.Ki
@@ -290,18 +293,18 @@ class Observer:
 
     def __call__(self, u, y, x_hat):
         "Call observer with this method; Inputs: command u and measurement y"
-        #if abs(y[1]) > np.pi/3:  # Wanneer de hypothese van de kleine hoeken niet meer geldt, schakelen we over tot
+        if abs(y[1]) > np.pi/3:  # Wanneer de hypothese van de kleine hoeken niet meer geldt, schakelen we over tot
             # een snelle observer. Hier hebben we immers minder vertrouwen in het systeem, dat een gelineariseerde
             # versie is van het echte systeem, gebruik makend van de hypothese van de kleine hoeken.
             # Bovendien zal de observer zo de grote sprongen in hoek kunnen volgen die zich voordoen wanner de pendulum
             # zich onderaan bevindt en de hoek van -pi naar pi springt of omgekeerd.
-        x_hat = np.matmul(self.A1 - np.matmul(self.L1,self.C1),x_hat) + np.transpose(self.B1*u) + [[x] for x in np.matmul(self.L1,y)]
-        #else:  # Wanneer de hypothese van de kleine hoeken in voldoende mate geldt, schakelen we over tot een tragere
+            x_hat = np.matmul(self.A1 - np.matmul(self.L1,self.C1),x_hat) + np.transpose(self.B1*u) + [[x] for x in np.matmul(self.L1,y)]
+        else:  # Wanneer de hypothese van de kleine hoeken in voldoende mate geldt, schakelen we over tot een tragere
             # observer. Het gelineariseerd systeem vormt namelijk in deze regio van de hoeken een goede benadering van
             # het werkelijk systeem. De tragere observer zal in dit domein meer vertrouwen steken in ons model en het
             # effect van de ruis minimaliseren. Toch blijven we de traagste pool van de observer sneller kiezen dan de
             # traagste pool van het systeem in closed loop, om een goede waarnemer te verzekeren.
-            #x_hat = np.matmul(self.A1 - np.matmul(self.L2,self.C1),x_hat) + np.transpose(self.B1*u) + [[x] for x in np.matmul(self.L2,y)]
+            x_hat = np.matmul(self.A1 - np.matmul(self.L2,self.C1),x_hat) + np.transpose(self.B1*u) + [[x] for x in np.matmul(self.L2,y)]
         return x_hat
 
 
