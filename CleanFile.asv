@@ -383,7 +383,7 @@ ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{$Observer_{combinatie}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
-%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombPA.png",'Resolution',300)
+exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombPA.png",'Resolution',300)
 %%
 F = figure;
 hold on
@@ -398,8 +398,8 @@ plot(nan,nan,'w')
 ylabel('Positie [m]')
 xlabel('Tijd [s]')
 title('\textbf{$Observer_{combinatie}$}','FontSize',45)
-legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
-%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombP.png",'Resolution',300)
+legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
+exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombP.png",'Resolution',300)
 %%
 F = figure;
 hold on
@@ -413,7 +413,7 @@ plot(nan,nan,'k:')
 plot(nan,nan,'w')
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
-title('\textbf{$Observer_{combinatie}$}','FontSize',45)
+title('\textbf{$Observer_{traag}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
 %exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombA.png",'Resolution',300)
 %% Plot State Observer snelheid
@@ -436,8 +436,8 @@ plot(nan,nan,'w')
 plot(nan,nan,'w')
 ylabel('Hoeksnelheid [rad/s]')
 xlabel('Tijd [s]')
-title('\textbf{$Observer_{combinatie}$}','FontSize',45)
-legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','southeast')
+title('\textbf{$Observer_{traag}$}','FontSize',45)
+legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
 %exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombVR.png",'Resolution',300)
 %%
 F = figure;
@@ -452,9 +452,9 @@ plot(nan,nan,'k:')
 plot(nan,nan,'w')
 ylabel('Snelheid [m/s]')
 xlabel('Tijd [s]')
-title('\textbf{$Observer_{combinatie}$}','FontSize',45)
-legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
-exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombV.png",'Resolution',300)
+title('\textbf{$Observer_{traag}$}','FontSize',45)
+legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombV.png",'Resolution',300)
 %%
 F = figure;
 hold on
@@ -468,9 +468,9 @@ plot(nan,nan,'k:')
 plot(nan,nan,'w')
 ylabel('Hoeksnelheid [rad/s]')
 xlabel('Tijd [s]')
-title('\textbf{$Observer_{combinatie}$}','FontSize',45)
-legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
-exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombR.png",'Resolution',300)
+title('\textbf{$Observer_{traag}$}','FontSize',45)
+legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombR.png",'Resolution',300)
 
 
 
@@ -881,7 +881,7 @@ mode = EXTENDED;
 [~,G1] = zero(Rd1);
 [~,G2] = zero(Rd2);
 w = 0;
-set_mode_params(arduino, mode, w, cat(1,reshape(Kcorr,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1),Kp)); % Laatste component kan Kp zijn indien start bij up-positie
+set_mode_params(arduino, mode, w, cat(1,reshape(Kcorr,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1),0)); % Laatste component kan Kp zijn indien start bij up-positie
 reset_system(arduino);
 Y = get_response(arduino, w, n_samples);
 close_connection(arduino)
