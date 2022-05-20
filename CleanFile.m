@@ -1,11 +1,8 @@
 clearvars; clc; close all
 PATH = pwd;
 addpath("matlab_tools")
-<<<<<<< HEAD
 % set(gca,'YTick',-2*pi:pi/2:2*pi)
 % set(gca,'YTickLabel',{'$-2\pi$','$-3\pi$/2','$-\pi$','$-\pi$/2','0','$\pi$/2','$\pi$','3$\pi$/2','2$\pi$'})
-=======
->>>>>>> d15c46e1c6cf637e112466d7fca1a6196546a36e
 %% Opmaak
 set(groot,'defaulttextinterpreter','latex');
 set(groot, 'defaultAxesTickLabelInterpreter','latex');
@@ -71,7 +68,6 @@ Ts = 0.05;
 Sd = c2d(S,Ts);
 Sdtf = tf(Sd);
 %% Plot Systeem open
-<<<<<<< HEAD
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
 n_samples = 1/0.05+1;
 ts = (0:n_samples-1)*Ts;
@@ -93,15 +89,10 @@ for i = 1:length(y(:,2))
         y(i:end,2) = y(i:end,2)+2*pi;
     end
 end
-=======
-t = 0:Ts:1;
-[y] = lsim(Sd,zeros(1,length(t)),t,[0 0 pi 0]);
->>>>>>> d15c46e1c6cf637e112466d7fca1a6196546a36e
 F = figure;
 hold on
 colororder({'b','r'})
 yyaxis left
-<<<<<<< HEAD
 plot(t,y(:,1),'b-','HandleVisibility','off')
 plot(t,x,'b--','HandleVisibility','off')
 ylabel('Positie [m]')
@@ -120,26 +111,10 @@ xlabel('Tijd [s]')
 title('\textbf{Impulsrespons open lus}','FontSize',45)
 legend('Simulatie','Meting',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','southwest')
 exportgraphics(F,PATH+"/Plots-Video/ResponsOpenLus.png",'Resolution',300)
-=======
-plot(t,y(:,1),'HandleVisibility','off')
-plot(nan,nan,'b.')
-ylim([0 50])
-ylabel('Positie [m]')
-yyaxis right
-plot(t,y(:,2),'HandleVisibility','off')
-plot(nan,nan,'r.')
-plot(nan,nan,'w')
-ylabel('Hoek [rad]')
-xlabel('Tijd [s]')
-title('\textbf{Respons open lus}','FontSize',45)
-legend('Positie x','Hoek $\theta$',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
-%exportgraphics(F,PATH+"/Plots-Video/ResponsOpenLus.png",'Resolution',300)
->>>>>>> d15c46e1c6cf637e112466d7fca1a6196546a36e
 %% Hoekcontroller
 ps2 = pole(Sdtf(2));
 zs2 = zero(Sdtf(2));
 Rd2 = zpk([ps2(2:end)],[0,1.04],48.1,Ts);
-<<<<<<< HEAD
 %% Plot Hoekcontroller gesloten
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 10^3);
 n_samples = 5/0.05+1;
@@ -156,29 +131,10 @@ clear arduino
 %%
 t = 0:Ts:5;
 [y] = lsim(feedback(Rd2*Sd,[0 1]),[zeros(1,length(t))],t,[0 0 0.1 0 0 0]);
-=======
-%% Plot Hoekcontroller open
-t = 0:Ts:5;
-[y] = impulse(Rd2,t);
-F = figure;
-hold on
-colororder({'b','r'})
-plot(t,y(:,1),'HandleVisibility','off')
-plot(nan,nan,'w.')
-ylabel('Kracht [N]')
-xlabel('Tijd [s]')
-title('\textbf{Impulsrespons open lus met $R_{theta}$}','FontSize',45)
-legend("$F_0 = 0\ N$")
-%exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsOpenLusR2.png",'Resolution',300)
-%% Plot Hoekcontroller gesloten
-t = 0:Ts:5;
-[y] = impulse(feedback(Rd2*Sd,[0 1]),t);
->>>>>>> d15c46e1c6cf637e112466d7fca1a6196546a36e
 F = figure;
 hold on
 colororder({'b','r'})
 yyaxis left
-<<<<<<< HEAD
 plot(t,y(:,1),'b-','HandleVisibility','off')
 plot(t,x,'b--','HandleVisibility','off')
 ylabel('Positie [m]')
@@ -192,27 +148,12 @@ ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{Impulsrespons gesloten lus met $R_{theta}$}','FontSize',45)
 legend('Simulatie','Meting',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0.1\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','south')
-=======
-plot(t,y(:,1),'HandleVisibility','off')
-plot(nan,nan,'.')
-ylabel('Positie [m]')
-yyaxis right
-plot(t,y(:,2),'HandleVisibility','off')
-plot(nan,nan,'.')
-plot(nan,nan,'w')
-ylim([-5 15])
-ylabel('Hoek [rad]')
-xlabel('Tijd [s]')
-title('\textbf{Impuls gesloten lus met $R_{theta}$}','FontSize',45)
-legend('Positie x','Hoek $\theta$',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
->>>>>>> d15c46e1c6cf637e112466d7fca1a6196546a36e
 %exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsGeslotenLusR2.png",'Resolution',300)
 %% Positiecontroller
 ps1 = pole(Sdtf(1));
 zs1 = zero(Sdtf(1));
 Rd1 = zpk([ps1(1),1.3,ps1(3)],[0.2,0.75,zs1(3),0.07],2.06,Ts);
 %% Plot Positiecontroller open
-<<<<<<< HEAD
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^2);
 n_samples = 7/0.05+1;
 ts = (0:n_samples-1)*Ts;
@@ -251,23 +192,6 @@ legend('Simulatie','Meting',newline+"$x_0 = 0.1\ m$"+newline+"$v_0 = 0\ m/s$"+ne
 %% Plot Positiecontroller gesloten
 t = 0:Ts:10;
 [y] = lsim(minreal(feedback(Rd1*Sd,[1 0])),[0 1 zeros(1,length(t)-2)],t);
-=======
-t = 0:Ts:5;
-[y] = impulse(Rd1,t);
-F = figure;
-hold on
-colororder({'b','r'})
-plot(t,y(:,1),'HandleVisibility','off')
-plot(nan,nan,'w.')
-ylabel('Kracht [N]')
-xlabel('Tijd [s]')
-title('\textbf{Impulsrespons open lus met $R_{x}$}','FontSize',45)
-legend("$F_0$ = 0 N")
-%exportgraphics(F,PATH+"/Plots-Video/ImpulsResponsOpenLusR1.png",'Resolution',300)
-%% Plot Positiecontroller gesloten
-t = 0:Ts:6;
-[y] = impulse(feedback(Rd1*Sd,[1 0]),t);
->>>>>>> d15c46e1c6cf637e112466d7fca1a6196546a36e
 F = figure;
 hold on
 colororder({'b','r'})
@@ -279,10 +203,6 @@ yyaxis right
 plot(t,y(:,2),'HandleVisibility','off')
 plot(nan,nan,'.')
 plot(nan,nan,'w')
-<<<<<<< HEAD
-=======
-ylim([-5 15])
->>>>>>> d15c46e1c6cf637e112466d7fca1a6196546a36e
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{Impuls gesloten lus met $R_{x}$}','FontSize',45)
