@@ -216,7 +216,7 @@ x = Y(1,:); theta = Y(2,:); u = Y(3,:);
 x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
 real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
 u = [Y(3,:);x;theta];
-%% Plot State Observer
+%% Plot State Observer 1
 [y] = lsim(observer1,u,ts,[0 0 pi 0]);
 F = figure;
 hold on
@@ -260,14 +260,12 @@ plot(nan,nan,'k--')
 plot(nan,nan,'k:')
 plot(nan,nan,'w')
 plot(nan,nan,'w')
-set(gca,'YTick',-2*pi:pi:2*pi)
-set(gca,'YTickLabel',{'$-2\pi$','$-\pi$','0','$\pi$','2$\pi$'})
 ylabel('Hoeksnelheid [rad/s]')
 xlabel('Tijd [s]')
 title('\textbf{$Observer_{snel}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
 %exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverSnelVR.png",'Resolution',300)
-%% Simulatie State Observer
+%% Simulatie State Observer 2
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
 n_samples = 30/0.05+1;
 ts = (0:n_samples-1)*Ts;
@@ -303,8 +301,8 @@ plot(nan,nan,'k--')
 plot(nan,nan,'k:')
 plot(nan,nan,'w')
 plot(nan,nan,'w')
-set(gca,'YTick',-2*pi:pi:2*pi)
-set(gca,'YTickLabel',{'$-2\pi$','$-\pi$','0','$\pi$','2$\pi$'})
+set(gca,'YTick',-3*pi:pi:3*pi)
+set(gca,'YTickLabel',{'$-3\pi$','$-2\pi$','$-\pi$','0','$\pi$','2$\pi$','$3\pi$'})
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{$Observer_{traag}$}','FontSize',45)
@@ -350,7 +348,7 @@ x = Y(1,:); theta = Y(2,:); u = Y(3,:);
 x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
 real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
 u = [Y(3,:);x;theta];
-%% Plot State Observer positie
+%%
 [y1] = lsim(observer1,u,ts,[0 0 pi 0]);
 [y2] = lsim(observer2,u,ts,[0 0 pi 0]);
 for i = 1:length(ts)
@@ -411,12 +409,14 @@ plot(nan,nan,'b-')
 plot(nan,nan,'r-')
 plot(nan,nan,'k:')
 plot(nan,nan,'w')
+set(gca,'YTick',-3*pi:pi:3*pi)
+set(gca,'YTickLabel',{'$-3\pi$','$-2\pi$','$-\pi$','0','$\pi$','2$\pi$','$3\pi$'})
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{$Observer_{combinatie}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
 %exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombA.png",'Resolution',300)
-%% Plot State Observer snelheid
+%%
 F = figure;
 hold on
 colororder({'b','r'})
