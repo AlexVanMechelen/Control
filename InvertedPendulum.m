@@ -54,7 +54,7 @@ ps2 = pole(Sdtf(2));zs2 = zero(Sdtf(2));
 Rd2 = zpk([ps2(2:end)],[0,1.04],48.1,Ts);
 %% Plot Hoekcontroller gesloten
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
-n_samples = 30/0.05+1;ts = (0:n_samples-1)*Ts;
+n_samples = 5/0.05+1;ts = (0:n_samples-1)*Ts;
 mode = CLASSICAL_ANG;
 w = 0.0;
 [~,G2] = zero(Rd2);
@@ -121,7 +121,7 @@ nexttile;plot(ts,v_hat,ts,real_v);title("Snelheid");legend("Observer","Systeem")
 nexttile;plot(ts,theta_dot_hat,ts,real_theta_dot);title("Hoeksnelheid");legend("Observer","Systeem")
 title(t,"State Observer")
 %% State Space Feedback
-Q = diag([38,1,10000,0]);R = 1;
+Q = diag([38,0,10000,0]);R = 1;
 [Kd,S,e] = dlqr(Sd.A,Sd.B,Q,R);
 %% Simulatie SSF
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout',60);
@@ -150,7 +150,7 @@ BE = [Sd.B zeros(4,1);Sd.D(1) -1];
 CE = [Sd.C, zeros(2,1)];
 DE = [Sd.D; 0];
 BEu0 = BE(:,1);
-Q = diag([1,0,100000,0,1]);R = 1;
+Q = diag([38,0,10000,0,1]);R = 1;
 [KE,SE,eE] = dlqr(AE,BEu0,Q,R);
 Kd = KE(1,1:4);Ki = KE(1,5);
 %% Simulatie ESSF Positie
