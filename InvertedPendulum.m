@@ -9,6 +9,7 @@ if ispc % Check for Windows OS
     pause(1)
     system('start cmd /k "title SYSTEM & python system.py"');
     system('start cmd /k "title CONTROLLER & python controller.py"');
+    pause(3)
 end
 %% Data
 L = 0.3;M = 0.5;m = 0.2;b = 0.1;I = 0.006;g = 9.81;
@@ -150,7 +151,11 @@ BE = [Sd.B zeros(4,1);Sd.D(1) -1];
 CE = [Sd.C, zeros(2,1)];
 DE = [Sd.D; 0];
 BEu0 = BE(:,1);
+<<<<<<< HEAD
 Q = diag([38,0,10000,0,1]);R = 1;
+=======
+Q = diag([38,0,10000,0,10]);R = 1;
+>>>>>>> 6f94c78c3b7ac70eae96e5123f61cbb9a2b21fe1
 [KE,SE,eE] = dlqr(AE,BEu0,Q,R);
 Kd = KE(1,1:4);Ki = KE(1,5);
 %% Simulatie ESSF Positie

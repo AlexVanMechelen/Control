@@ -712,7 +712,7 @@ BE = [Sd.B zeros(4,1);Sd.D(1) -1];
 CE = [Sd.C, zeros(2,1)];
 DE = [Sd.D; 0];
 BEu0 = BE(:,1);
-Q = diag([38,0,10000,0,10]);
+Q = diag([38,1,10000,0,10]);
 R = 1;
 [KE,SE,eE] = dlqr(AE,BEu0,Q,R)
 Kd = KE(1,1:4);
@@ -1045,3 +1045,35 @@ set(get(AX(2),'Ylabel'),'String','Hoek [rad]')
 title('Non-linear vs linear');
 legend('Positie lsim','Positie pysim','Hoek lsim','Hoek pysim','Location','Northeast');
 %exportgraphics(F,PATH+"/Plots-Video/ESSF/ESSFPI_Python_sim_vs_lsim__Pos_1.png",'Resolution',300)
+%% Rise time comparison ESSF I & ESSF PI
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
+n_samples = 240;
+ts = (0:n_samples-1)*Ts;
+mode = EXTENDED;
+[~,G1] = zero(Rd1);
+[~,G2] = zero(Rd2);
+w = 0;
+set_mode_params(arduino, mode, w, cat(1,reshape(Kd,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1),0));
+reset_system(arduino);
+Y = get_response(arduino, w, n_samples);
+close_connection(arduino)
+clear arduino
+
+real_x_I = Y(8,:); real_theta_I = Y(10,:);
+
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
+set_mode_params(arduino, mode, w, cat(1,reshape(Kd,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1),Kp));
+reset_system(arduino);
+Y = get_response(arduino, w, n_samples);
+close_connection(arduino)
+clear arduino
+
+real_x_PI = Y(8,:); real_theta_PI = Y(10,:);
+
+F = figure;
+[AX,H1,H2] = plotyy([ts',ts'],[real_x_I',real_x_PI'],[ts',ts'],[real_theta_I',real_theta_PI'],'plot');
+set(get(AX(1),'Ylabel'),'String','Positie [m]')
+set(get(AX(2),'Ylabel'),'String','Hoek [rad]')
+title('ESSF I vs ESSF PI');
+legend('Positie I','Positie PI','Hoek I','Hoek PI','Location','Northeast');
+%exportgraphics(F,PATH+"/Plots-Video/ESSF/ESSF_I_vs_ESSF_PI.png",'Resolution',300)
