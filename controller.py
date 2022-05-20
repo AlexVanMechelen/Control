@@ -43,6 +43,7 @@ class Controller:
         self.Kd = np.zeros((1, 4))
         self.Ki = 1
         self.SE = 0
+        self.Kp = 0
 
     
     def set_params(self, parameters):
@@ -146,6 +147,7 @@ class Controller:
             # Set observer params
             self.observer.set_arrays(L1, A1, B1, C1, L2)
 
+            self.Kp = parameters[49]  # Keep 0 for ESSF I, change to Kp for ESSF PI
 
     def __call__(self, y):
         """Call controller with measurement y
@@ -260,8 +262,9 @@ class Controller:
             out = list(y) + [u] + list(np.concatenate(self.x_hat))
 
         elif params.mode == 'EXTENDED':
-            self.SE += self.x_hat[0] - params.w
-            u = -np.matmul(self.Kd,self.x_hat) - self.Ki*self.SE
+            current_err = self.x_hat[0] - params.w
+            self.SE += current_err
+            u = -np.matmul(self.Kd,self.x_hat) - self.Ki*self.SE + self.Kp*current_err*(abs(y[1]) <= np.pi/3)  # This last boolean makes it that Kp is only used in the quasi-linear domain
             if abs(u) > 10:
                 u = np.sign(u)*10
             self.SE = -(u+np.matmul(self.Kd,self.x_hat))/self.Ki
