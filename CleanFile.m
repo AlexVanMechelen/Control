@@ -539,7 +539,7 @@ mode = EXTENDED;
 [~,G1] = zero(Rd1);
 [~,G2] = zero(Rd2);
 w = 0;
-set_mode_params(arduino, mode, w, cat(1,reshape(Kd,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1)));
+set_mode_params(arduino, mode, w, cat(1,reshape(Kd,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1),0));
 reset_system(arduino);
 Y = get_response(arduino, w, n_samples);
 close_connection(arduino)
@@ -695,7 +695,7 @@ mode = EXTENDED;
 [~,G1] = zero(Rd1);
 [~,G2] = zero(Rd2);
 w = 0;
-set_mode_params(arduino, mode, w, cat(1,reshape(Kcorr,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1)));
+set_mode_params(arduino, mode, w, cat(1,reshape(Kcorr,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1),0)); % Laatste component kan Kp zijn indien start bij up-positie
 reset_system(arduino);
 Y = get_response(arduino, w, n_samples);
 close_connection(arduino)
