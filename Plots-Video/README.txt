@@ -30,9 +30,9 @@ Dit is aangezien de integrator slechts vanaf de tweede tijdstap kan reageren
 op de aangelegde stap.
 
 ----------
-ESSF/*.png
+ESSF/ESSF[I/PI]_Python_sim_vs_lsim__Pos_[0/1].png
 ----------
-Alle figuren in deze directory zijn vergelijkingen tussen een simulatie in
+Alle figuren van dit type zijn vergelijkingen tussen een simulatie in
 Matlab via het lsim commando en een simulatie met de niet-lineaire
 implementatie in Pyhton. Elke simulatie werd uitgevoerd met een initiële
 perturbatie van 0.1 rad voor de hoek en 0 m voor de positie. In twee van de
@@ -41,12 +41,27 @@ de twee andere was deze gelijk aan 1 m, zodat de pendulum zich eveneens
 moest verplaatsen. Welke figuur welke stelwaarde heeft is zichtbaar aan het
 laatste cijfer in de bestandsnaam. Daarnaast werden twee simulaties uitgevoerd
 met een PI Extended State Space Feedback en twee met slechts de I versie.
-Er zal echter een miniem verschil zijn tussenbeide dat slechts in de lsim
-zichtbaar is (zie 'Comparisons/ESSF_I_vs_PI.png').
+Er zal een miniem verschil zijn tussenbeide dat reeds in de lsim zichtbaar
+was (zie 'Comparisons/ESSF_I_vs_PI.png'). Ook in de bespreking van
+'Comparisons/ESSF_I_vs_ESSF_PI.png' hieronder wordt dit opnieuw aangehaald.
 
 Wat meteen opvalt bij elke figuur is het feit dat er in de Python simulatie
 er ruis geïmplementeerd is op de meting, terwijl dit bij de lsim niet het
 geval is. Bovendien is er de niet-lineariteit binnen de Python implementatie
-die voor een iets tragere stabilisatie zorgt, zowel qua 'rise-time' als qua
+die voor een iets tragere stabilisatie zorgt, zowel qua 'rise time' als qua
 'settling time'.
 
+---------------------------------
+Comparisons/ESSF_I_vs_ESSF_PI.png
+---------------------------------
+Elke simulatie werd uitgevoerd met een initiële perturbatie van 0.1 rad voor
+de hoek en 0 m voor de positie, wat ook werd opgelegd als eindwaarde. Ook
+in deze Python simulatie met een niet-lineair systeem en ruis blijft de
+'rise time' van de ESSF PI net iets sneller dan die van de ESSF I. Dit komt
+wellicht omdat we ons tijdens deze simulatie erg dichtbij het punt bevonden
+waarrond we het systeem hebben gelineariseerd. Met betrekking tot de
+'settling time' daarentegen valt weinig te concluderen, gezien de aanwezige
+ruis. Zo kan u bijvoorbeeld reeds waarnemen dat de initiële reactie die de
+oranje kromme van de 'Positie PI' weergeeft sneller is, maar dat deze curve
+gekruist wordt door de blauwe en daarna lijkt achter te lopen, waarschijnlijk
+door de aanwezigheid van ruis.
