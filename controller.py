@@ -264,7 +264,7 @@ class Controller:
         elif params.mode == 'EXTENDED':
             current_err = self.x_hat[0] - params.w
             self.SE += current_err
-            u = -np.matmul(self.Kd,self.x_hat) - self.Ki*self.SE + self.Kp*current_err
+            u = -np.matmul(self.Kd,self.x_hat) - self.Ki*self.SE + self.Kp*current_err*(abs(y[1]) <= np.pi/3)  # This last boolean makes it that Kp is only used in the quasi-linear domain
             if abs(u) > 10:
                 u = np.sign(u)*10
             self.SE = -(u+np.matmul(self.Kd,self.x_hat))/self.Ki
