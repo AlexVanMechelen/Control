@@ -192,6 +192,39 @@ xlabel('Tijd [s]')
 title('\textbf{Staprespons gesloten lus met $R_{x}$}','FontSize',45)
 legend('Simulatie','Meting',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','south','Orientation','horizontal')
 %exportgraphics(F,PATH+"/Plots-Video/PID/StapresponsGeslotenLusR1.png",'Resolution',300)
+%% Plot Beide controllers gesloten
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
+n_samples = 30/0.05+1;
+ts = (0:n_samples-1)*Ts;
+mode = CLASSICAL_COMB;
+[~,G1] = zero(Rd1);
+[~,G2] = zero(Rd2);
+w = 0;
+set_mode_params(arduino, OPEN_LOOP, 0, []);reset_system(arduino);pause(1)
+set_mode_params(arduino, mode, 0, cat(1, G1,cat(1,zero(Rd1),pole(Rd1)),G2, cat(1, zero(Rd2), pole(Rd2))));
+reset_system(arduino);
+Y = get_response(arduino, w, n_samples);
+x = Y(1,:); theta = Y(2,:);
+close_connection(arduino)
+clear arduino
+%%
+F = figure;
+hold on
+colororder({'b','r'})
+yyaxis left
+plot(ts,x,'b','HandleVisibility','off')
+ylabel('Positie [m]')
+yyaxis right
+plot(ts,theta,'r','HandleVisibility','off')
+plot(nan,nan,'k-')
+plot(nan,nan,'w')
+set(gca,'YTick',-2*pi:pi/2:2*pi)
+set(gca,'YTickLabel',{'$-2\pi$','$-3\pi$/2','$-\pi$','$-\pi$/2','0','$\pi$/2','$\pi$','3$\pi$/2','2$\pi$'})
+ylabel('Hoek [rad]')
+xlabel('Tijd [s]')
+title('\textbf{Gesloten lus met $R_{x}$ en $R_{theta}$}','FontSize',45)
+legend('Meting',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast','Orientation','horizontal')
+%exportgraphics(F,PATH+"/Plots-Video/PID/StapresponsGeslotenLusR1R2.png",'Resolution',300)
 %% State Observer
 ps_d1 = [0,0,0.01,0.01];
 L1 = place(Sd.A', Sd.C', ps_d1);
