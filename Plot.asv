@@ -387,10 +387,10 @@ x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
 real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
 u = [Y(3,:);x;theta];
 %%
-[y1] = lsim(observer1,u(:,1:end-1),ts(1:end-1),[0 0 pi 0]);
-[y2] = lsim(observer2,u(:,1:end-1),ts(1:end-1),[0 0 pi 0]);
-for i = 2:length(ts)
-    if abs(theta(i-1)) > pi/3
+[y1] = lsim(observer1,u,ts,[0 0 pi 0]);
+[y2] = lsim(observer2,u,ts,[0 0 pi 0]);
+for i = 1:length(ts)
+    if abs(theta(i)) > pi/3
         y(i,:) = y1(i,:);
     else
         y(i,:) = y2(i,:);
@@ -400,12 +400,12 @@ F = figure;
 hold on
 colororder({'b','r'})
 yyaxis left
-plot(ts(2:end),y(:,1),'b-','HandleVisibility','off')
+plot(ts,y(:,1),'b-','HandleVisibility','off')
 plot(ts,x_hat,'b--','HandleVisibility','off')
 plot(ts,real_x,'k:','HandleVisibility','off')
 ylabel('Positie [m]')
 yyaxis right
-plot(ts(2:end),y(:,3),'r-','HandleVisibility','off')
+plot(ts,y(:,3),'r-','HandleVisibility','off')
 plot(ts,theta_hat,'r--','HandleVisibility','off')
 plot(ts,real_theta,'k:','HandleVisibility','off')
 plot(nan,nan,'k-')
@@ -476,7 +476,7 @@ ylabel('Hoeksnelheid [rad/s]')
 xlabel('Tijd [s]')
 title('\textbf{$Observer_{combinatie}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','southeast')
-exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombVR.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombVR.png",'Resolution',300)
 %%
 F = figure;
 hold on
@@ -492,7 +492,7 @@ ylabel('Snelheid [m/s]')
 xlabel('Tijd [s]')
 title('\textbf{$Observer_{combinatie}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
-exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombV.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombV.png",'Resolution',300)
 %%
 F = figure;
 hold on
@@ -508,7 +508,7 @@ ylabel('Hoeksnelheid [rad/s]')
 xlabel('Tijd [s]')
 title('\textbf{$Observer_{combinatie}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
-exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombR.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombR.png",'Resolution',300)
 %% State Space Feedback
 Q = diag([38,0,10000,0]);R = 1;
 [Kd,S,e] = dlqr(Sd.A,Sd.B,Q,R);
