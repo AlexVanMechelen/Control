@@ -107,20 +107,21 @@ ylabel('Hoek [rad]')
 set(gca,'YTick',-2*pi:pi/2:2*pi)
 set(gca,'YTickLabel',{'$-2\pi$','$-3\pi$/2','$-\pi$','$-\pi$/2','0','$\pi$/2','$\pi$','3$\pi$/2','2$\pi$'})
 xlabel('Tijd [s]')
-title('\textbf{Impulsrespons open lus}','FontSize',45)
+title('\textbf{Staprespons open lus}','FontSize',45)
 legend('Simulatie','Meting',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','southwest')
-%exportgraphics(F,PATH+"/Plots-Video/PID/ResponsOpenLus.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/PID/StapResponsOpenLus.png",'Resolution',300)
 %% Hoekcontroller
 ps2 = pole(Sdtf(2));
 zs2 = zero(Sdtf(2));
 Rd2 = zpk([ps2(2:end)],[0,1.04],48.1,Ts);
 %% Plot Hoekcontroller gesloten
-arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 10^3);
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
 n_samples = 5/0.05+1;
 ts = (0:n_samples-1)*Ts;
 mode = CLASSICAL_ANG;
 w = 0.0;
 [~,G2] = zero(Rd2);
+set_mode_params(arduino, OPEN_LOOP, 0, []);reset_system(arduino);pause(1)
 set_mode_params(arduino, mode, w, cat(1, G2, cat(1, zero(Rd2), pole(Rd2))));
 reset_system(arduino);
 Y = get_response(arduino, w, n_samples);
@@ -153,13 +154,14 @@ ps1 = pole(Sdtf(1));
 zs1 = zero(Sdtf(1));
 Rd1 = zpk([ps1(1),1.3,ps1(3)],[0.2,0.75,zs1(3),0.07],2.06,Ts);
 %% Plot Positiecontroller gesloten
-arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^2);
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
 n_samples = 20/0.05+1;
 ts = (0:n_samples-1)*Ts;
 mode = CLASSICAL_COMB;
 [~,G1] = zero(Rd1);
 [~,G2] = zero(Rd2);
 w = 1;
+set_mode_params(arduino, OPEN_LOOP, 0, []);reset_system(arduino);pause(1)
 set_mode_params(arduino, mode, 0, cat(1, G1,cat(1,zero(Rd1),pole(Rd1)),G2, cat(1, zero(Rd2), pole(Rd2))));
 reset_system(arduino);
 Y = get_response(arduino, w, n_samples);
@@ -190,6 +192,39 @@ xlabel('Tijd [s]')
 title('\textbf{Staprespons gesloten lus met $R_{x}$}','FontSize',45)
 legend('Simulatie','Meting',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','south','Orientation','horizontal')
 %exportgraphics(F,PATH+"/Plots-Video/PID/StapresponsGeslotenLusR1.png",'Resolution',300)
+%% Plot Beide controllers gesloten
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
+n_samples = 30/0.05+1;
+ts = (0:n_samples-1)*Ts;
+mode = CLASSICAL_COMB;
+[~,G1] = zero(Rd1);
+[~,G2] = zero(Rd2);
+w = 0;
+set_mode_params(arduino, OPEN_LOOP, 0, []);reset_system(arduino);pause(1)
+set_mode_params(arduino, mode, 0, cat(1, G1,cat(1,zero(Rd1),pole(Rd1)),G2, cat(1, zero(Rd2), pole(Rd2))));
+reset_system(arduino);
+Y = get_response(arduino, w, n_samples);
+x = Y(1,:); theta = Y(2,:);
+close_connection(arduino)
+clear arduino
+%%
+F = figure;
+hold on
+colororder({'b','r'})
+yyaxis left
+plot(ts,x,'b','HandleVisibility','off')
+ylabel('Positie [m]')
+yyaxis right
+plot(ts,theta,'r','HandleVisibility','off')
+plot(nan,nan,'k-')
+plot(nan,nan,'w')
+set(gca,'YTick',-2*pi:pi/2:2*pi)
+set(gca,'YTickLabel',{'$-2\pi$','$-3\pi$/2','$-\pi$','$-\pi$/2','0','$\pi$/2','$\pi$','3$\pi$/2','2$\pi$'})
+ylabel('Hoek [rad]')
+xlabel('Tijd [s]')
+title('\textbf{Gesloten lus met $R_{x}$ en $R_{theta}$}','FontSize',45)
+legend('Meting',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast','Orientation','horizontal')
+%exportgraphics(F,PATH+"/Plots-Video/PID/StapresponsGeslotenLusR1R2.png",'Resolution',300)
 %% State Observer
 ps_d1 = [0,0,0.01,0.01];
 L1 = place(Sd.A', Sd.C', ps_d1);
@@ -200,13 +235,14 @@ L2 = L2';
 observer1 = ss(Sd.A - L1*Sd.C, [Sd.B, L1], eye(4,4), 0, Ts);
 observer2 = ss(Sd.A - L2*Sd.C, [Sd.B, L2], eye(4,4), 0, Ts);
 %% Simulatie State Observer
-arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
 n_samples = 30/0.05+1;
 ts = (0:n_samples-1)*Ts;
 mode = OBSERVER_TEST;
 [~,G1] = zero(Rd1);
 [~,G2] = zero(Rd2);
 w = 0;
+set_mode_params(arduino, OPEN_LOOP, 0, []);reset_system(arduino);pause(1)
 set_mode_params(arduino, mode, w, cat(1, G1,cat(1,zero(Rd1),pole(Rd1)),G2, cat(1, zero(Rd2), pole(Rd2)),reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1)));
 reset_system(arduino);
 Y = get_response(arduino, w, n_samples);
@@ -235,8 +271,8 @@ plot(nan,nan,'k--')
 plot(nan,nan,'k:')
 plot(nan,nan,'w')
 plot(nan,nan,'w')
-set(gca,'YTick',-2*pi:pi:2*pi)
-set(gca,'YTickLabel',{'$-2\pi$','$-\pi$','0','$\pi$','2$\pi$'})
+set(gca,'YTick',-3*pi:pi:3*pi)
+set(gca,'YTickLabel',{'$-3\pi$','$-2\pi$','$-\pi$','0','$\pi$','2$\pi$','$3\pi$'})
 ylabel('Hoek [rad]')
 xlabel('Tijd [s]')
 title('\textbf{$Observer_{snel}$}','FontSize',45)
@@ -266,13 +302,14 @@ title('\textbf{$Observer_{snel}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
 %exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverSnelVR.png",'Resolution',300)
 %% Simulatie State Observer 2
-arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
 n_samples = 30/0.05+1;
 ts = (0:n_samples-1)*Ts;
 mode = OBSERVER_TEST;
 [~,G1] = zero(Rd1);
 [~,G2] = zero(Rd2);
 w = 0;
+set_mode_params(arduino, OPEN_LOOP, 0, []);reset_system(arduino);pause(1)
 set_mode_params(arduino, mode, w, cat(1, G1,cat(1,zero(Rd1),pole(Rd1)),G2, cat(1, zero(Rd2), pole(Rd2)),reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1)));
 reset_system(arduino);
 Y = get_response(arduino, w, n_samples);
@@ -332,13 +369,14 @@ title('\textbf{$Observer_{traag}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$")
 %exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverTraagVR.png",'Resolution',300)
 %% Simulatie gecombineerde observer
-arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
 n_samples = 30/0.05+1;
 ts = (0:n_samples-1)*Ts;
 mode = OBSERVER_TEST;
 [~,G1] = zero(Rd1);
 [~,G2] = zero(Rd2);
 w = 0;
+set_mode_params(arduino, OPEN_LOOP, 0, []);reset_system(arduino);pause(1)
 set_mode_params(arduino, mode, w, cat(1, G1,cat(1,zero(Rd1),pole(Rd1)),G2, cat(1, zero(Rd2), pole(Rd2)),reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1)));
 reset_system(arduino);
 Y = get_response(arduino, w, n_samples);
@@ -454,7 +492,7 @@ ylabel('Snelheid [m/s]')
 xlabel('Tijd [s]')
 title('\textbf{$Observer_{combinatie}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
-exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombV.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombV.png",'Resolution',300)
 %%
 F = figure;
 hold on
@@ -470,7 +508,176 @@ ylabel('Hoeksnelheid [rad/s]')
 xlabel('Tijd [s]')
 title('\textbf{$Observer_{combinatie}$}','FontSize',45)
 legend('Simulatie','Meting','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = \pi\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Location','northeast')
-exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombR.png",'Resolution',300)
+%exportgraphics(F,PATH+"/Plots-Video/Observer/ObserverCombR.png",'Resolution',300)
+%% State Space Feedback
+Q = diag([38,0,10000,0]);R = 1;
+[Kd,S,e] = dlqr(Sd.A,Sd.B,Q,R);
+SSF = ss(Sd.A-Sd.B*Kd,Sd.B,Sd.C,0,Ts);
+%% Simulatie SSF
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout',60);
+n_samples = 30/0.05+1;ts = (0:n_samples-1)*Ts;
+mode = STATE_SPACE;
+[~,G1] = zero(Rd1);
+[~,G2] = zero(Rd2);
+w = 0;
+set_mode_params(arduino, OPEN_LOOP, 0, []);reset_system(arduino);pause(1)
+set_mode_params(arduino, mode, w, cat(1,reshape(Kd,[],1),reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1)));
+reset_system(arduino);
+Y = get_response(arduino, w, n_samples);
+close_connection(arduino)
+clear arduino
+x = Y(1,:); theta = Y(2,:); u = Y(3,:);
+x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
+real_x_ESSF = Y(8,:); real_v = Y(9,:); real_theta_ESSF = Y(10,:); real_theta_dot = Y(11,:);
+%%
+[y] = lsim(SSF,zeros(1,length(ts)),ts,[0 0 0.1 0]);
+F = figure;
+hold on
+colororder({'b','r'})
+yyaxis left
+plot(ts,y(:,1),'b-','HandleVisibility','off')
+plot(ts,real_x_ESSF,'b:','HandleVisibility','off')
+ylim([-0.2 0.2])
+ylabel('Positie [m]')
+yyaxis right
+plot(ts,y(:,2),'r-','HandleVisibility','off')
+plot(ts,real_theta_ESSF,'r:','HandleVisibility','off')
+plot(nan,nan,'k-')
+plot(nan,nan,'k:')
+plot(nan,nan,'w')
+plot(nan,nan,'w')
+ylabel('Hoek [rad]')
+xlabel('Tijd [s]')
+title('\textbf{$State\ Feedback$}','FontSize',45)
+legend('Simulatie','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0.1\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'NumColumns',3,'Location','northeast')
+%exportgraphics(F,PATH+"/Plots-Video/SSF/StateSpaceFeedback.png",'Resolution',300)
+%% ESSF Positie
+AE = [Sd.A,zeros(4,1);Sd.C(1,:),[1]];
+BE = [Sd.B zeros(4,1);Sd.D(1) -1];
+CE = [Sd.C, zeros(2,1)];
+DE = [Sd.D; 0];
+BEu0 = BE(:,1);
+Q = diag([38,0,10000,0,10]);
+R = 1;
+[KE,SE,eE] = dlqr(AE,BEu0,Q,R);
+Kd = KE(1,1:4);
+Ki = KE(1,5);
+ESSF = ss(Sd.A-Sd.B*Kd,Sd.B,Sd.C,0,Ts);
+%% Simulatie ESSF Positie (I)
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
+n_samples = 30/0.05+1;
+ts = (0:n_samples-1)*Ts;
+mode = EXTENDED;
+[~,G1] = zero(Rd1);
+[~,G2] = zero(Rd2);
+w = 0;
+set_mode_params(arduino, OPEN_LOOP, 0, []);reset_system(arduino);pause(1)
+set_mode_params(arduino, mode, w, cat(1,reshape(Kd,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1),0));
+reset_system(arduino);
+Y = get_response(arduino, w, n_samples);
+close_connection(arduino)
+clear arduino
+x = Y(1,:); theta = Y(2,:); u = Y(3,:);
+x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
+real_x_ESSFI = Y(8,:); real_v = Y(9,:); real_theta_ESSFI = Y(10,:); real_theta_dot = Y(11,:);
+%%
+[y] = lsim(ESSF,zeros(1,length(ts)),ts,[0 0 0.1 0]);
+F = figure;
+hold on
+colororder({'b','r'})
+yyaxis left
+plot(ts,y(:,1),'b-','HandleVisibility','off')
+plot(ts,real_x_ESSFI,'b:','HandleVisibility','off')
+ylim([-0.2 0.2])
+ylabel('Positie [m]')
+yyaxis right
+plot(ts,y(:,2),'r-','HandleVisibility','off')
+plot(ts,real_theta_ESSFI,'r:','HandleVisibility','off')
+plot(nan,nan,'k-')
+plot(nan,nan,'k:')
+plot(nan,nan,'w')
+plot(nan,nan,'w')
+ylabel('Hoek [rad]')
+xlabel('Tijd [s]')
+title('\textbf{$State\ Space\ Feedback\ met\ Integrator$}','FontSize',45)
+legend('Simulatie','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0.1\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'NumColumns',3,'Location','northeast')
+%exportgraphics(F,PATH+"/Plots-Video/ESSF/ExtendedStateSpaceFeedback.png",'Resolution',300)
+%% ESSFPI Positie
+z = tf('z',Ts);
+RI = Ki/(z-1);
+sysd_cl = ss(Sd.A-Sd.B*Kd,Sd.B,Sd.C,0,Ts);
+sysE_cl = feedback(RI*sysd_cl, [1, 1]);
+P_ESS_I = log(pole(sysE_cl))/Ts;
+z_PI = (P_ESS_I(end));
+Kp = Ki/(1-z_PI);
+Kcorr = Kd-Kp*Sd.C(1,:);
+sysd_PI_cl = ss(Sd.A-Sd.B*Kcorr,Sd.B,Sd.C,0,Ts);
+R_PI = Kp + Ki/(z-1);
+ESSFPI = feedback(R_PI*sysd_PI_cl,[1,1]);
+%% Simulatie ESSFPI Positie
+arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 2*10^3);
+n_samples = 30/0.05+1;ts = (0:n_samples-1)*Ts;
+mode = EXTENDED;
+[~,G1] = zero(Rd1);
+[~,G2] = zero(Rd2);
+w = 0;
+set_mode_params(arduino, OPEN_LOOP, 0, []);reset_system(arduino);pause(1)
+set_mode_params(arduino, mode, w, cat(1,reshape(Kcorr,[],1),Ki,reshape(L1,[],1),reshape(Sd.A,[],1),reshape(Sd.B,[],1),reshape(Sd.C,[],1),reshape(L2,[],1),Kp));
+reset_system(arduino);
+Y = get_response(arduino, w, n_samples);
+close_connection(arduino)
+clear arduino
+x = Y(1,:); theta = Y(2,:); u = Y(3,:);
+x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
+real_x_ESSFPI = Y(8,:); real_v = Y(9,:); real_theta_ESSFPI = Y(10,:); real_theta_dot = Y(11,:);
+%%
+[y] = lsim(ESSFPI,zeros(1,length(ts)),ts,[0 0 0.1 0 0]);
+F = figure;
+hold on
+colororder({'b','r'})
+yyaxis left
+plot(ts,y(:,1),'b-','HandleVisibility','off')
+plot(ts,real_x_ESSFPI,'b:','HandleVisibility','off')
+ylim([-0.2 0.2])
+ylabel('Positie [m]')
+yyaxis right
+plot(ts,y(:,2),'r-','HandleVisibility','off')
+plot(ts,real_theta_ESSFPI,'r:','HandleVisibility','off')
+plot(nan,nan,'k-')
+plot(nan,nan,'k:')
+plot(nan,nan,'w')
+plot(nan,nan,'w')
+ylabel('Hoek [rad]')
+xlabel('Tijd [s]')
+title('\textbf{$State\ Space\ Feedback\ met\ PI$}','FontSize',45)
+legend('Simulatie','Werkelijke waarde',newline+"$x_0 = 0\ m$"+newline+"$v_0 = 0\ m/s$"+newline+"$\theta_0 = 0.1\ rad$"+newline+"$\omega_0 = 0\ rad/s$",'Orientation','horizontal','Location','northeast')
+%exportgraphics(F,PATH+"/Plots-Video/ESSF/ExtendedStateSpaceFeedbackPI.png",'Resolution',300)
+%%
+F = figure;
+hold on
+plot(ts,real_x_ESSF,'DisplayName',['ESSF RMS: ',num2str(rms(real_x_ESSF),'%.2e')])
+plot(ts,real_x_ESSFI,'DisplayName',['ESSFI RMS: ',num2str(rms(real_x_ESSFI),'%.2e')])
+plot(ts,real_x_ESSFPI,'DisplayName',['ESSFPI RMS: ',num2str(rms(real_x_ESSFPI),'%.2e')])
+ylim([-0.2 0.2])
+ylabel('Positie [m]')
+xlabel('Tijd [s]')
+title('$Vergelijking\ positie$')
+legend('Orientation','horizontal','Location','northeast')
+%exportgraphics(F,PATH+"/Plots-Video/Comparisons/FeedbackP.png",'Resolution',300)
+%%
+F = figure;
+hold on
+plot(ts,real_theta_ESSF,'DisplayName',['ESSF RMS: ',num2str(rms(real_theta_ESSF),'%.2e')])
+plot(ts,real_theta_ESSFI,'DisplayName',['ESSFI RMS: ',num2str(rms(real_theta_ESSFI),'%.2e')])
+plot(ts,real_theta_ESSFPI,'DisplayName',['ESSFPI RMS: ',num2str(rms(real_theta_ESSFPI),'%.2e')])
+ylabel('Hoek [rad]')
+xlabel('Tijd [s]')
+title('$Vergelijking\ hoek$')
+legend('Orientation','horizontal','Location','northeast')
+%exportgraphics(F,PATH+"/Plots-Video/Comparisons/FeedbackA.png",'Resolution',300)
+
+
+
 
 
 

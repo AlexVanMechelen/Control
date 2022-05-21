@@ -1,8 +1,10 @@
-clearvars; clc; close all
+clearvars; clc;
 PATH = pwd;
 addpath("matlab_tools")
 get(0,'ScreenSize');
 set(groot,'defaultFigurePosition',[ans(3)/2 0 ans(3)/2 ans(4)])
+figure
+pause(5)
 %% Startup Python
 if ispc % Check for Windows OS
     system('closeSessions.bat');
@@ -36,7 +38,7 @@ OBSERVER_TEST = 3;STATE_SPACE = 4;EXTENDED    = 5;
 Ts = 0.05;Sd = c2d(S,Ts);Sdtf = tf(Sd);
 %% Plot Systeem open
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout', 60);
-n_samples = 30/0.05+1;ts = (0:n_samples-1)*Ts;
+n_samples = 5/0.05+1;ts = (0:n_samples-1)*Ts;
 mode = OPEN_LOOP;
 w = 1;
 set_mode_params(arduino, mode, w, [])
@@ -47,8 +49,8 @@ close_connection(arduino)
 clear arduino
 figure(1);
 t = tiledlayout(1,2);
-nexttile;plot(ts,x);title("Positie");hold on
-nexttile;plot(ts,theta);title("Hoek");hold on
+nexttile;plot(ts,x);ylabel('Positie [m]');xlabel('Tijd [s]')
+nexttile;plot(ts,theta);ylabel('Hoek [rad]');xlabel('Tijd [s]')
 title(t,"Systeem open loop")
 %% Hoekcontroller
 ps2 = pole(Sdtf(2));zs2 = zero(Sdtf(2));
@@ -66,10 +68,11 @@ Y = get_response(arduino, w, n_samples);
 x = Y(1,:); theta = Y(2,:);
 close_connection(arduino)
 clear arduino
+%%
 figure(1);
 t = tiledlayout(1,2);
-nexttile;plot(ts,x);title("Positie")
-nexttile;plot(ts,theta);title("Hoek")
+nexttile;plot(ts,x);ylabel('Positie [m]');xlabel('Tijd [s]')
+nexttile;plot(ts,theta);ylabel('Hoek [rad]');xlabel('Tijd [s]')
 title(t,"Hoekcontroller")
 %% Positiecontroller
 ps1 = pole(Sdtf(1));zs1 = zero(Sdtf(1));
@@ -90,8 +93,8 @@ close_connection(arduino)
 clear arduino
 figure(1);
 t = tiledlayout(1,2);
-nexttile;plot(ts,x1);title("Positie")
-nexttile;plot(ts,theta1);title("Hoek")
+nexttile;plot(ts,x1);ylabel('Positie [m]');xlabel('Tijd [s]')
+nexttile;plot(ts,theta1);ylabel('Hoek [rad]');xlabel('Tijd [s]')
 title(t,"Positie- en Hoekcontroller in parallel")
 %% State Observer
 ps_d1 = [0,0,0.01,0.01];L1 = place(Sd.A', Sd.C', ps_d1);L1 = L1';
@@ -116,13 +119,13 @@ x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
 real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
 figure(1);
 t = tiledlayout(2,2);
-nexttile;plot(ts,x2,ts,x_hat,ts,real_x);title("Positie");legend("Meting","Observer","Systeem")
-nexttile;plot(ts,theta2,ts,theta_hat,ts,real_theta);title("Hoek");legend("Meting","Observer","Systeem")
-nexttile;plot(ts,v_hat,ts,real_v);title("Snelheid");legend("Observer","Systeem")
-nexttile;plot(ts,theta_dot_hat,ts,real_theta_dot);title("Hoeksnelheid");legend("Observer","Systeem")
+nexttile;ylabel('Positie [m]');plot(ts,x2,ts,x_hat,ts,real_x);ylabel('Positie [m]');legend("Meting","Observer","Systeem");xlabel('Tijd [s]')
+nexttile;ylabel('Hoek [rad]');plot(ts,theta2,ts,theta_hat,ts,real_theta);ylabel('Hoek [rad]');legend("Meting","Observer","Systeem");xlabel('Tijd [s]')
+nexttile;ylabel('Snelheid [m/s]');plot(ts,v_hat,ts,real_v);title("Snelheid");legend("Observer","Systeem");xlabel('Tijd [s]')
+nexttile;ylabel('Hoeksnelheid [m/s]');plot(ts,theta_dot_hat,ts,real_theta_dot);title("Hoeksnelheid");legend("Observer","Systeem");xlabel('Tijd [s]')
 title(t,"State Observer")
 %% State Space Feedback
-Q = diag([38,1,10000,0]);R = 1;
+Q = diag([38,0,10000,0]);R = 1;
 [Kd,S,e] = dlqr(Sd.A,Sd.B,Q,R);
 %% Simulatie SSF
 arduino = tcpclient('127.0.0.1', 6012, 'Timeout',60);
@@ -142,8 +145,8 @@ x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
 real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
 figure(1);
 t = tiledlayout(1,2);
-nexttile;plot(ts,x3);title("Positie")
-nexttile;plot(ts,theta3);title("Hoek")
+nexttile;plot(ts,x3);ylabel('Positie [m]');xlabel('Tijd [s]')
+nexttile;plot(ts,theta3);ylabel('Hoek [rad]');xlabel('Tijd [s]')
 title(t,"State Space Feedback")
 %% ESSF Positie
 AE = [Sd.A,zeros(4,1);Sd.C(1,:),[1]];
@@ -172,8 +175,8 @@ x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
 real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
 figure(1);
 t = tiledlayout(1,2);
-nexttile;plot(ts,x4);title("Positie")
-nexttile;plot(ts,theta4);title("Hoek")
+nexttile;plot(ts,x4);ylabel('Positie [m]');xlabel('Tijd [s]')
+nexttile;plot(ts,theta4);ylabel('Hoek [rad]');xlabel('Tijd [s]')
 title(t,"Extended State Space Feedback Positie")
 %% ESSFPI Positie
 z = tf('z',Ts);
@@ -203,13 +206,13 @@ x_hat = Y(4,:); v_hat = Y(5,:); theta_hat = Y(6,:); theta_dot_hat = Y(7,:);
 real_x = Y(8,:); real_v = Y(9,:); real_theta = Y(10,:); real_theta_dot = Y(11,:);
 figure(1);
 t = tiledlayout(1,2);
-nexttile;plot(ts,x5);title("Positie")
-nexttile;plot(ts,theta5);title("Hoek")
+nexttile;plot(ts,x5);ylabel('Positie [m]');xlabel('Tijd [s]')
+nexttile;plot(ts,theta5);ylabel('Hoek [rad]');xlabel('Tijd [s]')
 title(t,"Extended State Space Feedback PI Positie")
 %% Comparison
 pause(5)
 figure(1);
 t = tiledlayout(1,2);
-nexttile;plot(ts,x1,ts,x2,ts,x3,ts,x4,ts,x5);title("Positie");legend("PID","PID+Observer","State Feedback","Extended State Feedback","Extended State Feedback PI")
-nexttile;plot(ts,theta1,ts,theta2,ts,theta3,ts,theta4,ts,theta5);title("Hoek");legend("PID","PID+Observer","State Feedback","Extended State Feedback","Extended State Feedback PI")
+nexttile;plot(ts,x1,ts,x2,ts,x3,ts,x4,ts,x5);ylabel('Positie [m]');legend("PID","PID+Observer","State Feedback","Extended State Feedback","Extended State Feedback PI")
+nexttile;plot(ts,theta1,ts,theta2,ts,theta3,ts,theta4,ts,theta5);ylabel('Hoek [rad]');legend("PID","PID+Observer","State Feedback","Extended State Feedback","Extended State Feedback PI")
 title(t,"Vergelijking")
