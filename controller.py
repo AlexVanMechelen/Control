@@ -35,7 +35,7 @@ class Controller:
         self.p22    = 0.0
 
         self.x_hat = np.zeros((4, 1))
-        self.x_hat[2] = np.pi
+        self.x_hat[2] = 0.1
         self.observer = Observer()
 
         self.angle_factor = 11 / 10
