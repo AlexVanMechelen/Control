@@ -17,4 +17,5 @@ The classic inverted pendulum, where you must move a cart to keep the pendulum i
 * [Plots-Video/README.txt](https://github.com/AlexVanMechelen/arduino/blob/master/Plots-Video/README.txt) :  Comments on some of the plots in Plots-Video
 * [Controller.py](https://github.com/AlexVanMechelen/arduino/blob/master/controller.py) :  Main python file used for the control
 * [src/Pendulum.py](https://github.com/AlexVanMechelen/arduino/blob/master/src/pendulum.py) :  Contains the nonlinear pendulum model
-* [closeSessions.bat](https://github.com/AlexVanMechelen/arduino/blob/master/closeSessions.bat) :  For an easy run of the Python simulations just using Matlab (ONLY ON WINDOWS)
+* [Block Diagrams](https://github.com/AlexVanMechelen/arduino/tree/master/Diagrammen) : Contains block diagrams of the used controlled systems
+* [closeSessions.bat](https://github.com/AlexVanMechelen/arduino/blob/master/closeSessions.bat) :  For an easy run of the Python simulations just using Matlab (ONLY FOR WINDOWS)
