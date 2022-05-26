@@ -2,7 +2,7 @@
 
 The classic inverted pendulum, where you must move a cart to keep the pendulum in a vertical position.
 
-<img src="pictures/invertedpendulum.jpg" alt="drawing" height="400"/>
+<img src="Plots-Video/DemoPicture.jpg" alt="drawing"/>
 
 * state vars = [`x`, `v`, `theta`, `omega`] with `x` [m] and `v` [m/s] the position and velocity of the cart, and `theta` and `omega` the angle [rad] and angular velocity [rad/s] of the pendulum with respect to the vertical.
 * input = a force `F` [N] applied to the cart
